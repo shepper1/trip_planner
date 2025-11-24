@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Générateur de Voyage</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        /* Animation du spinner */
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #C66B3D; /* Couleur Ocre */
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+
+<body class="bg-gray-50 min-h-screen flex items-center justify-center p-4">
+    <div class="bg-white p-8 rounded-xl shadow-xl max-w-lg w-full">
+        <div id="section-form">
+            <h1 class="text-2xl font-bold text-gray-800 mb-6 text-center">Créez votre Roadtrip 🗺️</h1>
+            <form id="travelForm" class="space-y-4">
+                <div>
+                    <label for="destination" class="block text-sm font-medium text-gray-700">Destination</label>
+                    <input type="text" id="destination" name="destination" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 border p-2">
+                </div>
+                <div>
+                    <label for="duree" class="block text-sm font-medium text-gray-700">Durée (en jours)</label>
+                    <input type="number" id="duree" name="duree" min="1" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 border p-2">
+                </div>
+                <button type="submit" class="w-full bg-[#C66B3D] text-white font-bold py-3 rounded-lg hover:bg-[#a85a32] transition duration-300">
+                    Générer mon voyage
+                </button>
+            </form>
+        </div>
+
+        <div id="section-loading" class="hidden text-center py-10">
+            <div class="loader mb-4"></div>
+            <h2 class="text-xl font-semibold text-gray-800">Création en cours...</h2>
+            <p class="text-gray-500 mt-2">Nous construisons votre itinéraire sur mesure.</p>
+            <p class="text-sm text-gray-400 mt-1">Cela peut prendre jusqu'à 60 secondes.</p>
+        </div>
+
+        <div id="section-success" class="hidden text-center py-6">
+            <div class="w-16 h-16 bg-green-100 text-green-500 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">
+                ✓
+            </div>
+            <h2 class="text-2xl font-bold text-gray-800 mb-2">C'est terminé !</h2>
+            <p id="success-message" class="text-gray-600 mb-6">Votre roadtrip est prêt.</p>
+            
+            <a id="dynamic-link" href="https://shepper1.github.io/Seoul/" target="_blank" class="block w-full bg-[#4A6C6F] text-white font-bold py-3 rounded-lg hover:bg-[#385254] transition duration-300">
+                Voir mon Voyage
+            </a>
+        </div>
+
+        <div id="section-error" class="hidden text-center py-6">
+            <div class="text-red-500 text-5xl mb-4">⚠️</div>
+            <h2 class="text-xl font-bold text-gray-800">Oups !</h2>
+            <p class="text-gray-600 mt-2">Une erreur est survenue lors de la génération.</p>
+            <button onclick="location.reload()" class="mt-4 text-indigo-600 underline">Réessayer</button>
+        </div>
+    </div>
+
+    <script>
+        // --- CONFIGURATION ---
+        // Remplacez par l'URL de votre Webhook n8n (Production URL)
+        const N8N_WEBHOOK_URL = 'https://fesnaultthl.app.n8n.cloud/webhook/695e2724-613b-4430-bdc5-9b07dbe38fca'; 
+
+        const form = document.getElementById('travelForm');
+        const sectionForm = document.getElementById('section-form');
+        const sectionLoading = document.getElementById('section-loading');
+        const sectionSuccess = document.getElementById('section-success');
+        const sectionError = document.getElementById('section-error');
+        const dynamicLink = document.getElementById('dynamic-link');
+
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault(); // Empêche le rechargement classique de la page
+
+            // 1. Récupérer les données
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
+
+            // 2. Changer l'interface -> CHARGEMENT
+            sectionForm.classList.add('hidden');
+            sectionLoading.classList.remove('hidden');
+
+            try {
+                // 3. Envoyer à n8n
+                const response = await fetch(N8N_WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    // 4. Lire la réponse de n8n
+                    const result = await response.json(); 
+                    
+                    // Exemple de réponse attendue de n8n : { "url": "https://...", "message": "..." }
+                    
+                    // 5. Mettre à jour le bouton avec l'URL reçue
+                    if(result.url) {
+                        dynamicLink.href = result.url;
+                    }
+                    
+                    // 6. Changer l'interface -> SUCCÈS
+                    sectionLoading.classList.add('hidden');
+                    sectionSuccess.classList.remove('hidden');
+                } else {
+                    throw new Error('Erreur serveur n8n');
+                }
+
+            } catch (error) {
+                console.error('Erreur:', error);
+                sectionLoading.classList.add('hidden');
+                sectionError.classList.remove('hidden');
+            }
+        });
+    </script>
+</body>
+</html>
