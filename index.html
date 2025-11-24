@@ -45,7 +45,7 @@
             <div class="loader mb-4"></div>
             <h2 class="text-xl font-semibold text-gray-800">Création en cours...</h2>
             <p class="text-gray-500 mt-2">Nous construisons votre itinéraire sur mesure.</p>
-            <p class="text-sm text-gray-400 mt-1">Cela peut prendre jusqu'à 60 secondes.</p>
+            <p class="text-sm text-gray-400 mt-1">Cela peut prendre jusqu'à 2 minutes.</p>
         </div>
 
         <div id="section-success" class="hidden text-center py-6">
@@ -55,9 +55,13 @@
             <h2 class="text-2xl font-bold text-gray-800 mb-2">C'est terminé !</h2>
             <p id="success-message" class="text-gray-600 mb-6">Votre roadtrip est prêt.</p>
             
-            <a id="dynamic-link" href="https://shepper1.github.io/Seoul/" target="_blank" class="block w-full bg-[#4A6C6F] text-white font-bold py-3 rounded-lg hover:bg-[#385254] transition duration-300">
+            <a id="dynamic-link" href="#" target="_blank" class="block w-full bg-[#4A6C6F] text-white font-bold py-3 rounded-lg hover:bg-[#385254] transition duration-300 mb-4 shadow-md">
                 Voir mon Voyage
             </a>
+
+            <button onclick="location.reload()" class="text-sm text-gray-500 hover:text-[#C66B3D] hover:underline transition duration-300 flex items-center justify-center gap-1 w-full py-2">
+                <span>↻</span> Créer un autre voyage
+            </button>
         </div>
 
         <div id="section-error" class="hidden text-center py-6">
@@ -92,7 +96,7 @@
             sectionLoading.classList.remove('hidden');
 
             try {
-                // 3. Envoyer à n8n
+                // 3. Envoyer à n8n (le code "attend" ici la fin du workflow)
                 const response = await fetch(N8N_WEBHOOK_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
