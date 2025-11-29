@@ -37,7 +37,7 @@
                 <div id="nav-public" class="flex space-x-4 items-center">
                     <button onclick="router('auth')" class="text-slate-600 hover:text-indigo-600 font-medium px-3 py-2 md:py-2.5">Connexion</button>
                     <button onclick="router('auth', 'signup')" class="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 md:px-5 md:py-2.5 rounded-full font-bold transition shadow-lg">
-                        Créer un compte
+                        S'inscrire
                     </button>
                 </div>
 
@@ -215,7 +215,7 @@
             </form>
             
             <div class="mt-6 text-center pt-6 border-t border-slate-100">
-                <button onclick="toggleAuthMode()" id="auth-switch-text" class="text-indigo-600 font-bold text-sm hover:underline">Pas encore de compte ? Créer un compte</button>
+                <button onclick="toggleAuthMode()" id="auth-switch-text" class="text-indigo-600 font-bold text-sm hover:underline">Pas encore de compte ? S'inscrire</button>
             </div>
         </div>
     </div>
@@ -382,7 +382,7 @@
             const confirmGroup = document.getElementById('group-password-confirm');
 
             if (isSignupMode) {
-                title.innerText = "Créer un compte";
+                title.innerText = "Inscription";
                 sub.innerText = "Rejoignez TripPlanner pour sauvegarder vos voyages.";
                 btn.innerText = "S'inscrire";
                 switchText.innerText = "Déjà inscrit ? Se connecter";
@@ -391,7 +391,7 @@
                 title.innerText = "Connexion";
                 sub.innerText = "Accédez à votre espace membre.";
                 btn.innerText = "Se connecter";
-                switchText.innerText = "Pas encore de compte ? Créer un compte";
+                switchText.innerText = "Pas encore de compte ? S'inscrire";
                 confirmGroup.classList.add('hidden-section');
             }
         }
