@@ -1,10 +1,8 @@
 <!DOCTYPE html>
-<html lang="fr">
-<head>
+<html lang="fr" class="overflow-x-hidden"> <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trip Planner - L'IA de vos vacances</title>
-    <link href="./src/output.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"> <title>Trip Planner - L'IA de vos vacances</title>
+    <link href="./src/tailwind.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pocketbase/0.21.1/pocketbase.umd.min.js"></script>
     
@@ -19,6 +17,12 @@
             background-image: linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.95)), url('https://source.unsplash.com/random/1920x1080/?travel,landscape');
             background-size: cover;
             background-position: center;
+        }
+
+        /* FORCE NO HORIZONTAL SCROLL */
+        html, body {
+            max-width: 100%;
+            overflow-x: hidden;
         }
     </style>
 </head>
