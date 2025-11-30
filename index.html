@@ -344,52 +344,6 @@
 
         // --- 1. GESTION DU FLUX GRATUIT ---
         async function handleFreeForm(e) {
-    // 1. On bloque le rechargement de page
-    e.preventDefault(); 
-    
-    // 2. Premier test : Est-ce que le clic est détecté ?
-    alert("Étape 1 : Le bouton fonctionne !"); 
-
-    const form = e.target;
-    const btn = form.querySelector('button[type="submit"]');
-    
-    // Récupération des données
-    const formData = new FormData(form);
-    const data = Object.fromEntries(formData.entries());
-    
-    // Petit log pour voir les données dans la console (F12)
-    console.log("Données prêtes à l'envoi :", data);
-
-    try {
-        btn.innerHTML = 'Test en cours...';
-        
-        // 3. Test de l'appel réseau
-        // J'utilise ici une URL de test publique qui marche toujours
-        const urlTest = "https://jsonplaceholder.typicode.com/posts";
-        
-        alert("Étape 2 : Tentative d'envoi vers " + urlTest);
-        
-        const response = await fetch(urlTest, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
-        });
-
-        if (response.ok) {
-            alert("Étape 3 : SUCCÈS ! Le réseau fonctionne.");
-            // Si vous voyez ça, remettez votre VRAIE url de webhook
-        } else {
-            alert("Étape 3 : ÉCHEC réseau (Erreur " + response.status + ")");
-        }
-
-    } catch (error) {
-        console.error(error);
-        alert("ERREUR TECHNIQUE : " + error.message);
-    } finally {
-        btn.innerHTML = 'Réessayer';
-    }
-}
-        /* async function handleFreeForm(e) {
             e.preventDefault();
             const form = e.target;
             const btn = form.querySelector('button[type="submit"]');
@@ -439,7 +393,7 @@
                 btn.disabled = false;
                 btn.innerHTML = originalBtnText;
             }
-        } */
+        }
 
         // --- 2. GESTION DU FLUX PREMIUM ---
         async function handlePremiumForm(e) {
