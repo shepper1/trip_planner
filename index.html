@@ -5,6 +5,7 @@
     <link href="./src/tailwind.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pocketbase/0.21.1/pocketbase.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <style>
         /* Utility Classes */
@@ -105,7 +106,7 @@
 
                         <h2 class="text-2xl font-bold mb-6 text-slate-800">Où partez-vous ?</h2>
                         
-                        <form id="freeForm" class="space-y-4">
+                        <form id="freeForm" onsubmit="handleFreeForm(event)" class="space-y-4">
                             <div class="flex items-center justify-between bg-slate-50 p-3 rounded-xl border border-slate-100 cursor-pointer" onclick="document.getElementById('free_surprise').click()">
                                 <div class="flex items-center text-sm font-semibold text-slate-700">
                                     <i class="fa-solid fa-wand-magic-sparkles text-indigo-500 mr-2"></i> Mode "Surprends-moi"
@@ -270,35 +271,35 @@
             </div>
             
             <div class="p-8">
-                <form id="premiumForm" class="space-y-6">
+                <form id="premiumForm" onsubmit="handlePremiumForm(event)" class="space-y-6">
                     <div class="flex items-center justify-between bg-indigo-50 p-4 rounded-xl border border-indigo-100 cursor-pointer" onclick="document.getElementById('prem_surprise').click()">
                         <div class="flex items-center font-bold text-indigo-800"><i class="fa-solid fa-wand-magic-sparkles mr-2"></i> Mode Surprise (L'IA choisit tout)</div>
                         <label class="relative inline-flex items-center cursor-pointer pointer-events-none">
-                            <input type="checkbox" id="prem_surprise" class="sr-only peer">
+                            <input type="checkbox" id="prem_surprise" name="surprise" class="sr-only peer">
                             <div class="w-11 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:bg-indigo-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
                         </label>
                     </div>
 
                     <div>
                          <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Ville de départ</label>
-                         <input type="text" id="prem_origin" placeholder="Ex: Bordeaux" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-3 outline-none focus:ring-2 focus:ring-indigo-500">
+                         <input type="text" id="prem_origin" name="origin" placeholder="Ex: Bordeaux" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-3 outline-none focus:ring-2 focus:ring-indigo-500">
                     </div>
 
                     <div class="grid md:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Destination</label>
-                            <input type="text" id="prem_dest" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-3 outline-none focus:ring-2 focus:ring-indigo-500">
+                            <input type="text" id="prem_dest" name="destination" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-3 outline-none focus:ring-2 focus:ring-indigo-500">
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Budget Total</label>
-                            <input type="number" placeholder="Ex: 2000€" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-3 outline-none focus:ring-2 focus:ring-indigo-500">
+                            <input type="number" name="budget" placeholder="Ex: 2000€" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-3 outline-none focus:ring-2 focus:ring-indigo-500">
                         </div>
                     </div>
 
                     <div class="grid md:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Rythme</label>
-                            <select class="w-full bg-slate-50 border border-slate-200 rounded-lg p-3 outline-none">
+                            <select name="rythme" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-3 outline-none">
                                 <option>Cool (Détente)</option>
                                 <option>Modéré (Equilibré)</option>
                                 <option>Intensif (Tout voir)</option>
@@ -306,7 +307,7 @@
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Type Logement</label>
-                            <select class="w-full bg-slate-50 border border-slate-200 rounded-lg p-3 outline-none">
+                            <select name="logement" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-3 outline-none">
                                 <option>Hôtel</option>
                                 <option>Airbnb / Appart</option>
                                 <option>Auberge</option>
@@ -316,7 +317,7 @@
 
                     <div>
                         <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Intérêts Spécifiques</label>
-                        <textarea rows="3" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-3 outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
+                        <textarea name="interets" rows="3" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-3 outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
                     </div>
 
                     <button type="submit" class="w-full bg-slate-900 text-white font-bold py-4 rounded-xl hover:bg-slate-800 transition shadow-lg">
@@ -328,8 +329,12 @@
     </div>
 
     <script>
-        // CONFIG
+        // --- CONFIGURATION ---
         const PB_URL = "https://api.mytripplanner.fr/_/";
+        
+        // 👇 REMPLACEZ CES URLS PAR VOS URLS DE WEBHOOK (Make, Zapier, n8n...)
+        const WEBHOOK_FREE = "https://api.mytripplanner.fr/webhook/695e2724-613b-4430-bdc5-9b07dbe38fca"; 
+        const WEBHOOK_PREMIUM = "https://api.mytripplanner.fr/webhook/032ddc39-7ac3-4daa-98a6-5ae43dc25338";
 
         // Initialisation PocketBase
         const pb = new PocketBase(PB_URL);
@@ -337,16 +342,147 @@
         // État de l'interface auth
         let isSignupMode = false;
 
+        // --- 1. GESTION DU FLUX GRATUIT ---
+        async function handleFreeForm(e) {
+            e.preventDefault();
+            const form = e.target;
+            const btn = form.querySelector('button[type="submit"]');
+            const originalBtnText = btn.innerHTML;
+            
+            // Récupération des données
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
+            data.is_surprise = document.getElementById('free_surprise').checked;
+
+            // UI: Chargement
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin mr-2"></i> Envoi en cours...';
+
+            try {
+                // APPEL DU WEBHOOK FREE
+                // Note: Si vous n'avez pas encore de webhook, cela fera une erreur 404, c'est normal.
+                const response = await fetch(WEBHOOK_FREE, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    Swal.fire({
+                        title: 'Itinéraire en cours !',
+                        text: `L'IA travaille dessus. Vous recevrez tout par email à ${data.email} d'ici quelques minutes.`,
+                        icon: 'success',
+                        confirmButtonColor: '#4f46e5',
+                        confirmButtonText: 'Super !'
+                    });
+                    form.reset();
+                } else {
+                    throw new Error("Erreur lors de l'envoi au webhook");
+                }
+
+            } catch (error) {
+                console.error(error);
+                // Fallback pour la démo si le webhook n'existe pas encore
+                Swal.fire({
+                    title: 'Demande envoyée (Simulée)',
+                    text: "Votre webhook n'est pas encore configuré, mais la logique JS fonctionne !",
+                    icon: 'warning',
+                    confirmButtonColor: '#4f46e5'
+                });
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalBtnText;
+            }
+        }
+
+        // --- 2. GESTION DU FLUX PREMIUM ---
+        async function handlePremiumForm(e) {
+            e.preventDefault();
+            
+            // Vérification connexion
+            if (!pb.authStore.isValid || !pb.authStore.model) {
+                Swal.fire('Non connecté', 'Veuillez vous connecter pour accéder au service Premium.', 'warning');
+                return;
+            }
+
+            const user = pb.authStore.model;
+            const currentCredits = user.credits || 0;
+
+            // Vérification Crédits
+            if (currentCredits < 1) {
+                Swal.fire({
+                    title: 'Crédits insuffisants',
+                    text: "Il vous faut au moins 1 crédit pour générer un voyage Expert.",
+                    icon: 'warning',
+                    confirmButtonText: 'Recharger',
+                    confirmButtonColor: '#4f46e5'
+                });
+                return;
+            }
+
+            const form = e.target;
+            const btn = form.querySelector('button[type="submit"]');
+            const originalBtnText = btn.innerHTML;
+            
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
+            
+            // Ajout des métadonnées utilisateur
+            data.user_id = user.id;
+            data.user_email = user.email;
+            data.is_surprise = document.getElementById('prem_surprise').checked;
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin mr-2"></i> Analyse IA...';
+
+            try {
+                const response = await fetch(WEBHOOK_PREMIUM, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    // Simulation mise à jour crédits (Idéalement fait par le backend)
+                    const newCredits = currentCredits - 1;
+                    document.getElementById('dash-credits').innerText = newCredits;
+                    pb.authStore.model.credits = newCredits; 
+
+                    hideModal('modal-new-trip');
+
+                    Swal.fire({
+                        title: 'Voyage Expert lancé !',
+                        html: `Votre demande est partie. Notre IA analyse les meilleures options.<br><b>Nouveau solde : ${newCredits} crédits.</b>`,
+                        icon: 'success',
+                        confirmButtonColor: '#4f46e5'
+                    });
+                    
+                    form.reset();
+                } else {
+                    throw new Error("Erreur webhook premium");
+                }
+
+            } catch (error) {
+                console.error(error);
+                Swal.fire({
+                    title: 'Erreur technique',
+                    text: "Impossible de contacter le service Premium (Vérifiez l'URL du Webhook).",
+                    icon: 'error',
+                    confirmButtonColor: '#ef4444'
+                });
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalBtnText;
+            }
+        }
+
         // --- ROUTEUR STRICT ---
         function router(viewName, mode = null) {
-            // 1. Cacher TOUTES les vues
             document.querySelectorAll('.app-view').forEach(el => el.classList.add('hidden-section'));
             
-            // 2. Afficher la vue demandée
             const target = document.getElementById('view-' + viewName);
             if (target) target.classList.remove('hidden-section');
 
-            // 3. Logique spécifique Auth
             if (viewName === 'auth') {
                 isSignupMode = (mode === 'signup');
                 updateAuthUI();
@@ -354,8 +490,6 @@
                 document.getElementById('auth-email').value = '';
                 document.getElementById('auth-password').value = '';
             }
-
-            // 4. Mettre à jour la Navbar
             updateNavbar();
         }
 
@@ -380,7 +514,7 @@
         }
 
         // --- AUTH LOGIC ---
-        function toggleAuthUI() {
+        function toggleAuthMode() {
             isSignupMode = !isSignupMode;
             updateAuthUI();
         }
@@ -470,7 +604,6 @@
             if(pb.authStore.isValid) router('dashboard');
             else router('home');
         });
-
     </script>
 </body>
 </html>
