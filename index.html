@@ -137,14 +137,47 @@
                                 </div>
                             </div>
 
-                            <div class="flex space-x-3">
-                                <div class="w-1/2">
-                                    <label class="text-xs font-bold text-slate-500 uppercase ml-1">Début (Optionnel)</label>
-                                    <input type="date" name="date_debut" class="mt-1 block w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:ring-2 focus:ring-indigo-500 outline-none text-sm text-slate-600">
+                            <div class="flex items-center space-x-6 mb-2 ml-1">
+                                <label class="flex items-center cursor-pointer text-sm font-bold text-slate-600">
+                                    <input type="radio" name="free_mode_type" value="duree" checked 
+                                        onchange="toggleDateMode('free', 'duree')" 
+                                        class="mr-2 text-indigo-600 focus:ring-indigo-500">
+                                    Je sais combien de temps (Durée)
+                                </label>
+                                <label class="flex items-center cursor-pointer text-sm font-bold text-slate-600">
+                                    <input type="radio" name="free_mode_type" value="dates" 
+                                        onchange="toggleDateMode('free', 'dates')" 
+                                        class="mr-2 text-indigo-600 focus:ring-indigo-500">
+                                    Je sais quand (Dates précises)
+                                </label>
+                            </div>
+
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-3">
+                                
+                                <div id="free_bloc_duree">
+                                    <label class="text-xs font-bold text-slate-500 uppercase ml-1">Durée (Jours)</label>
+                                    <div class="relative">
+                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <i class="fa-regular fa-clock text-slate-400"></i>
+                                        </div>
+                                        <input type="number" name="duree" id="free_input_duree" placeholder="Ex: 7" min="1" 
+                                            class="pl-10 mt-1 block w-full bg-white border border-slate-200 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500 outline-none text-sm text-slate-600">
+                                    </div>
                                 </div>
-                                <div class="w-1/2">
-                                    <label class="text-xs font-bold text-slate-500 uppercase ml-1">Fin (Optionnel)</label>
-                                    <input type="date" name="date_fin" class="mt-1 block w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:ring-2 focus:ring-indigo-500 outline-none text-sm text-slate-600">
+
+                                <div id="free_bloc_dates" class="hidden-section flex space-x-3">
+                                    <div class="w-1/2">
+                                        <label class="text-xs font-bold text-slate-500 uppercase ml-1">Début</label>
+                                        <input type="date" name="date_debut" id="free_input_date_debut" 
+                                            onchange="checkDates('free')"
+                                            class="mt-1 block w-full bg-white border border-slate-200 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500 outline-none text-sm text-slate-600">
+                                    </div>
+                                    <div class="w-1/2">
+                                        <label class="text-xs font-bold text-slate-500 uppercase ml-1">Fin</label>
+                                        <input type="date" name="date_fin" id="free_input_date_fin" 
+                                            onchange="checkDates('free')"
+                                            class="mt-1 block w-full bg-white border border-slate-200 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500 outline-none text-sm text-slate-600">
+                                    </div>
                                 </div>
                             </div>
                             
@@ -745,6 +778,63 @@
             if(pb.authStore.isValid) router('dashboard');
             else router('home');
         });
+        
+        // --- LOGIQUE BASCULE DATES / DURÉE ---
+        function toggleDateMode(prefix, mode) {
+            const blocDuree = document.getElementById(prefix + '_bloc_duree');
+            const blocDates = document.getElementById(prefix + '_bloc_dates');
+            
+            // Inputs pour les vider
+            const inputDuree = document.getElementById(prefix + '_input_duree');
+            const inputStart = document.getElementById(prefix + '_input_date_debut');
+            const inputEnd = document.getElementById(prefix + '_input_date_fin');
+
+            if (mode === 'duree') {
+                // Affiche Durée, Cache Dates
+                blocDuree.classList.remove('hidden-section');
+                blocDates.classList.add('hidden-section');
+                
+                // Nettoyage : On vide les dates car on utilise la durée
+                if(inputStart) inputStart.value = "";
+                if(inputEnd) inputEnd.value = "";
+                
+            } else {
+                // Affiche Dates, Cache Durée
+                blocDates.classList.remove('hidden-section');
+                blocDuree.classList.add('hidden-section');
+                
+                // Nettoyage : On vide la durée car on utilise les dates
+                if(inputDuree) inputDuree.value = "";
+            }
+        }
+
+        // --- SÉCURITÉ DES DATES (Bloque les dates antérieures) ---
+        function checkDates(prefix) {
+            const startInput = document.getElementById(prefix + '_input_date_debut');
+            const endInput = document.getElementById(prefix + '_input_date_fin');
+
+            // Sécurité : si les champs n'existent pas encore dans le DOM
+            if (!startInput || !endInput) return;
+
+            // 1. MISE À JOUR DU CALENDRIER (UX)
+            // Dès qu'on choisit une date de début, on interdit tout ce qui est avant dans le calendrier de fin
+            if (startInput.value) {
+                endInput.min = startInput.value;
+            }
+
+            // 2. VERIFICATION DES VALEURS (Sécurité)
+            if (startInput.value && endInput.value) {
+                if (endInput.value < startInput.value) {
+                    Swal.fire({
+                        title: 'Date impossible',
+                        text: 'La date de fin ne peut pas être avant la date de début !',
+                        icon: 'warning',
+                        confirmButtonColor: '#4f46e5'
+                    });
+                    endInput.value = ""; // On efface la date invalide
+                }
+            }
+        }
     </script>
 </body>
 </html>
