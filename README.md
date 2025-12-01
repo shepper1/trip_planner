@@ -6,7 +6,7 @@ Ce dépôt contient l'interface utilisateur (UI) du projet Trip Planner, héberg
 
 ## 1. 🌐 Architecture & Fichiers
 
-Ce projet utilise une architecture **Single Page Application (SPA)** simple en HTML, JavaScript et Tailwind CSS (via CDN).
+Ce projet utilise une architecture **Single Page Application (SPA)** simple en HTML, JavaScript et Tailwind CSS.
 
 | Fichier | Rôle |
 | :--- | :--- |
@@ -32,3 +32,4 @@ const PB_URL = "[https://api.votre-domaine.com](https://api.votre-domaine.com)";
 // --- CONFIGURATION DES WEBHOOKS (Logique n8n) ---
 const WEBHOOK_FREE = "[https://api.votre-domaine.com/webhook/free](https://api.votre-domaine.com/webhook/free)"; 
 const WEBHOOK_PRO = "[https://api.votre-domaine.com/webhook/pro](https://api.votre-domaine.com/webhook/pro)";
+```
