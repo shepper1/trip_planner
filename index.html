@@ -417,21 +417,30 @@
             const data = Object.fromEntries(formData.entries());
             data.is_surprise = document.getElementById('free_surprise').checked;
 
-            // 2. VALIDATION INTELLIGENTE (Free)
-            // Champs toujours obligatoires
-            if (!data.origin || !data.origin.trim()) {
-                Swal.fire('Oups', 'La ville de départ est obligatoire.', 'warning');
-                return;
+            // 2. VALIDATION INTELLIGENTE (Free)    
+            // VERIFICATION ORIGINE (Doit être sélectionné dans la liste)
+            const originInput = document.getElementById('free_origin');
+            
+            // On vérifie si l'input a du texte ET si data-valid est "true"
+            // (Note: data-valid est géré par la nouvelle fonction setupAutocomplete)
+            if (!originInput.value || originInput.dataset.valid !== "true") {
+                Swal.fire('Ville inconnue', 'Veuillez sélectionner une ville de départ dans la liste déroulante.', 'warning');
+                return; // On arrête tout ici
             }
+
             if (!data.email || !data.email.trim()) {
-                Swal.fire('Oups', 'L\'email est obligatoire pour recevoir le voyage.', 'warning');
+                Swal.fire('Oups', 'L\'email est obligatoire.', 'warning');
                 return;
             }
 
-            // Destination : Obligatoire SAUF si mode Surprise
-            if (!data.is_surprise && (!data.destination || !data.destination.trim())) {
-                Swal.fire('Destination manquante', 'Indiquez une destination ou cochez le mode "Surprends-moi" !', 'warning');
-                return;
+            // VERIFICATION DESTINATION
+            // Si ce n'est pas une surprise, on doit vérifier la validité de la sélection
+            const destInput = document.getElementById('free_destination');
+            if (!data.is_surprise) {
+                if (!destInput.value || destInput.dataset.valid !== "true") {
+                    Swal.fire('Destination inconnue', 'Veuillez sélectionner une destination dans la liste ou cocher "Surprends-moi".', 'warning');
+                    return; // On arrête tout ici
+                }
             }
 
             // Note : Les dates sont maintenant FACULTATIVES. 
@@ -777,6 +786,14 @@
         document.addEventListener('DOMContentLoaded', () => {
             if(pb.authStore.isValid) router('dashboard');
             else router('home');
+    
+            // 1. Formulaire Gratuit (Accueil)
+            setupAutocomplete('free_origin', false);      // false = Villes seulement (pas de pays seul en origine)
+            setupAutocomplete('free_destination', true);  // true = Villes OU Pays autorisés
+
+            // 2. Formulaire Premium (Modal)
+            setupAutocomplete('prem_origin', false);
+            setupAutocomplete('prem_dest', true);
         });
         
         // --- LOGIQUE BASCULE DATES / DURÉE ---
@@ -834,6 +851,126 @@
                     endInput.value = ""; // On efface la date invalide
                 }
             }
+        }
+        // --- AUTOCOMPLÉTION (Villes & Pays) ---
+        /**
+         * Configure l'autocomplétion sur un champ input spécifique
+         * @param {string} inputId - L'ID de l'input HTML
+         * @param {boolean} allowCountries - Si true, autorise les pays (pour la destination). Si false, cherche surtout des villes.
+         */
+        function setupAutocomplete(inputId, allowCountries = true) {
+            const input = document.getElementById(inputId);
+            if (!input) return;
+
+            // État de validation par défaut
+            input.dataset.valid = "false";
+            
+            // Création de la liste (cachée par défaut)
+            let list = document.createElement("ul");
+            list.className = "absolute z-50 left-0 right-0 bg-white border border-slate-200 rounded-lg shadow-xl mt-1 hidden max-h-60 overflow-y-auto";
+            input.parentNode.appendChild(list);
+
+            let timeoutId;
+            let currentController = null; // Pour annuler les requêtes précédentes immédiatement
+
+            input.addEventListener("input", function() {
+                const query = this.value;
+                
+                // 1. Invalidation immédiate dès qu'on tape
+                input.dataset.valid = "false"; 
+                
+                // 2. Nettoyage immédiat
+                list.innerHTML = "";
+                list.classList.add("hidden");
+
+                // 3. Annulation de la requête précédente (Fluidité)
+                if (currentController) {
+                    currentController.abort();
+                }
+
+                if (query.length < 1) return;
+
+                clearTimeout(timeoutId);
+                
+                // 4. Délai court (50ms) pour une sensation de "temps réel"
+                timeoutId = setTimeout(async () => {
+                    currentController = new AbortController();
+                    const signal = currentController.signal;
+
+                    try {
+                        // Utilisation de l'API Photon (Optimisée pour la recherche rapide)
+                        let url = `https://photon.komoot.io/api/?q=${encodeURIComponent(query)}&lang=fr&limit=5`;
+                        
+                        const response = await fetch(url, { signal });
+                        const data = await response.json();
+
+                        if (data.features && data.features.length > 0) {
+                            list.classList.remove("hidden");
+
+                            data.features.forEach(feature => {
+                                const props = feature.properties;
+                                
+                                // Filtrage (Si on ne veut que des villes pour l'origine)
+                                if (!allowCountries && props.osm_value === 'country') return;
+
+                                const li = document.createElement("li");
+                                li.className = "px-4 py-2 hover:bg-indigo-50 cursor-pointer border-b border-slate-50 transition-colors flex items-center";
+                                
+                                // Icônes simples
+                                let icon = '<i class="fa-solid fa-city text-slate-300 mr-3 text-xs"></i>';
+                                if (props.osm_value === 'country') icon = '<i class="fa-solid fa-globe text-indigo-300 mr-3 text-xs"></i>';
+                                
+                                // Construction du texte
+                                let displayText = props.name;
+                                let secondaryText = "";
+                                
+                                // Logique d'affichage Ville / Pays propre
+                                if (props.osm_value !== 'country') {
+                                    if (props.city && props.city !== props.name) secondaryText += props.city;
+                                    if (props.country) secondaryText += (secondaryText ? ", " : "") + props.country;
+                                }
+
+                                li.innerHTML = `
+                                    ${icon}
+                                    <div class="truncate">
+                                        <div class="font-medium text-sm text-slate-700">${displayText}</div>
+                                        ${secondaryText ? `<div class="text-xs text-slate-400 truncate">${secondaryText}</div>` : ''}
+                                    </div>
+                                `;
+
+                                // Gestion du clic (Validation)
+                                li.addEventListener("click", () => {
+                                    if (props.osm_value === 'country') {
+                                        input.value = props.name;
+                                    } else {
+                                        input.value = `${props.name}, ${props.country || ''}`; 
+                                    }
+                                    
+                                    // C'est ICI que le formulaire devient valide
+                                    input.dataset.valid = "true";
+                                    
+                                    list.classList.add("hidden");
+                                    list.innerHTML = "";
+                                });
+
+                                list.appendChild(li);
+                            });
+                        }
+                    } catch (err) {
+                        // On ignore les erreurs d'annulation (AbortError) pour ne pas polluer la console
+                        if (err.name !== 'AbortError') {
+                            console.error("Erreur API:", err);
+                        }
+                    }
+                }, 50); // Fin du délai
+            });
+
+            // Fermeture de la liste au clic extérieur
+            document.addEventListener("click", function(e) {
+                if (e.target !== input) {
+                    list.classList.add("hidden");
+                }
+            });
         }
     </script>
 </body>
