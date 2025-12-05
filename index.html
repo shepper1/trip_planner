@@ -468,45 +468,49 @@
                         confirmButtonColor: '#4f46e5',
                         confirmButtonText: 'Parfait, je surveille ma boîte !'
                     });
-
-                    // 1. On mémorise le MODE (Dates vs Durée)
+                        
+                    // --- 1. SAUVEGARDE DU CONTEXTE (Ce qu'on veut garder) ---
                     const currentMode = document.querySelector('input[name="free_mode_type"]:checked').value;
-                    
-                    // 2. On mémorise la VILLE DE DÉPART (Best Practice UX)
                     const currentOrigin = document.getElementById('free_origin').value;
+                    const currentEmail = form.querySelector('input[name="email"]').value; // ON SAUVEGARDE L'EMAIL
 
-                    // --- NETTOYAGE ---
-                    form.reset();
+                    // --- 2. NETTOYAGE TOTAL (On efface tout le reste : destination, dates, etc.) ---
+                    form.reset(); 
 
-                    // 1. On remet la Ville de départ
+                    // --- 3. RESTAURATION INTELLIGENTE ---
+
+                    // A. On remet la Ville de départ
                     const originInput = document.getElementById('free_origin');
                     if (originInput) {
                         originInput.value = currentOrigin;
-                        // On s'assure qu'elle reste considérée comme "valide" pour le prochain envoi
-                        originInput.dataset.valid = "true"; 
+                        originInput.dataset.valid = "true"; // On la garde valide
                     }
 
-                    // 2. On remet le Mode (Dates ou Durée)
+                    // B. On remet l'Email
+                    const emailInput = form.querySelector('input[name="email"]');
+                    if (emailInput) {
+                        emailInput.value = currentEmail;
+                    }
+
+                    // C. On remet le Mode (Dates ou Durée)
                     const radioToRestore = document.querySelector(`input[name="free_mode_type"][value="${currentMode}"]`);
                     if (radioToRestore) {
                         radioToRestore.checked = true;
-                        toggleDateMode('free', currentMode); // Met à jour l'affichage
+                        toggleDateMode('free', currentMode); // Met à jour l'affichage des champs
                     }
 
-                    // 3. On décoche explicitement "Surprise" (Nouvelle recherche vierge)
+                    // D. On s'assure que "Surprise" est bien décoché (c'est une nouvelle recherche)
                     const surpriseCheck = document.getElementById('free_surprise');
                     if(surpriseCheck) surpriseCheck.checked = false;
                     
-                    // 4. On déverrouille le champ destination (au cas où il était grisé par le mode Surprise)
+                    // E. On remet le champ destination à neuf (vierge et débloqué)
                     const destInput = document.getElementById('free_destination');
                     if(destInput) {
                         destInput.disabled = false;
                         destInput.value = "";
                         destInput.classList.remove('opacity-50', 'cursor-not-allowed');
-                        // On invalide la destination car elle est vide maintenant
-                        destInput.dataset.valid = "false"; 
+                        destInput.dataset.valid = "false"; // La destination est vide, donc invalide pour l'instant
                     }
-
                 } else {
                     throw new Error("Erreur lors de l'envoi au webhook");
                 }
