@@ -468,12 +468,44 @@
                         confirmButtonColor: '#4f46e5',
                         confirmButtonText: 'Parfait, je surveille ma boîte !'
                     });
+
+                    // 1. On mémorise le MODE (Dates vs Durée)
+                    const currentMode = document.querySelector('input[name="free_mode_type"]:checked').value;
+                    
+                    // 2. On mémorise la VILLE DE DÉPART (Best Practice UX)
+                    const currentOrigin = document.getElementById('free_origin').value;
+
+                    // --- NETTOYAGE ---
                     form.reset();
-                    // On remet l'état visuel de la checkbox surprise à zéro
-                    document.getElementById('free_surprise').checked = false;
-                    document.getElementById('free_destination').disabled = false;
-                    document.getElementById('free_destination').value = "";
-                    document.getElementById('free_destination').classList.remove('opacity-50', 'cursor-not-allowed');
+
+                    // 1. On remet la Ville de départ
+                    const originInput = document.getElementById('free_origin');
+                    if (originInput) {
+                        originInput.value = currentOrigin;
+                        // On s'assure qu'elle reste considérée comme "valide" pour le prochain envoi
+                        originInput.dataset.valid = "true"; 
+                    }
+
+                    // 2. On remet le Mode (Dates ou Durée)
+                    const radioToRestore = document.querySelector(`input[name="free_mode_type"][value="${currentMode}"]`);
+                    if (radioToRestore) {
+                        radioToRestore.checked = true;
+                        toggleDateMode('free', currentMode); // Met à jour l'affichage
+                    }
+
+                    // 3. On décoche explicitement "Surprise" (Nouvelle recherche vierge)
+                    const surpriseCheck = document.getElementById('free_surprise');
+                    if(surpriseCheck) surpriseCheck.checked = false;
+                    
+                    // 4. On déverrouille le champ destination (au cas où il était grisé par le mode Surprise)
+                    const destInput = document.getElementById('free_destination');
+                    if(destInput) {
+                        destInput.disabled = false;
+                        destInput.value = "";
+                        destInput.classList.remove('opacity-50', 'cursor-not-allowed');
+                        // On invalide la destination car elle est vide maintenant
+                        destInput.dataset.valid = "false"; 
+                    }
 
                 } else {
                     throw new Error("Erreur lors de l'envoi au webhook");
