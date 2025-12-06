@@ -1,2 +1,12 @@
 Trip planner*.json
 .DS_Store
+
+# --- Python ---
+# On ignore l'environnement virtuel (lourd et inutile sur git)
+tests/venv/
+venv/
+ENV/
+
+# On ignore les fichiers compilés par Python
+__pycache__/
+*.py[cod]
