@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="fr" class="overflow-x-hidden"> <head>
+<html lang="fr" class="overflow-x-hidden">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"> <title>Trip Planner - L'IA de vos vacances</title>
     <link href="./src/tailwind.css" rel="stylesheet">
@@ -25,6 +26,17 @@
             max-width: 100%;
             overflow-x: hidden;
         }
+
+        .suggestions-list {
+            background: white;
+            position: absolute;
+            width: 100%;
+            z-index: 100;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        .hidden { display: none !important; }
     </style>
 </head>
 <body class="bg-white font-sans text-slate-800 overflow-x-hidden">
@@ -894,116 +906,104 @@
          * @param {string} inputId - L'ID de l'input HTML
          * @param {boolean} allowCountries - Si true, autorise les pays (pour la destination). Si false, cherche surtout des villes.
          */
+
         function setupAutocomplete(inputId, allowCountries = true) {
             const input = document.getElementById(inputId);
             if (!input) return;
 
-            // État de validation par défaut
             input.dataset.valid = "false";
             
-            // Création de la liste (cachée par défaut)
             let list = document.createElement("ul");
-            list.className = "absolute z-50 left-0 right-0 bg-white border border-slate-200 rounded-lg shadow-xl mt-1 hidden max-h-60 overflow-y-auto";
+            // Z-index très élevé et positionnement forcé
+            list.className = "suggestions-list absolute z-[1000] top-full left-0 right-0 bg-white border border-slate-200 rounded-lg shadow-xl mt-1 hidden max-h-60 overflow-y-auto";
             input.parentNode.appendChild(list);
 
             let timeoutId;
-            let currentController = null; // Pour annuler les requêtes précédentes immédiatement
+            let currentController = null;
 
             input.addEventListener("input", function() {
                 const query = this.value;
                 
-                // 1. Invalidation immédiate dès qu'on tape
                 input.dataset.valid = "false"; 
-                
-                // 2. Nettoyage immédiat
                 list.innerHTML = "";
                 list.classList.add("hidden");
 
-                // 3. Annulation de la requête précédente (Fluidité)
-                if (currentController) {
-                    currentController.abort();
-                }
-
-                if (query.length < 1) return;
-
+                if (currentController) currentController.abort();
                 clearTimeout(timeoutId);
-                
-                // 4. Délai court (50ms) pour une sensation de "temps réel"
+
+                if (query.length < 2) return;
+
                 timeoutId = setTimeout(async () => {
                     currentController = new AbortController();
-                    const signal = currentController.signal;
-
+                    
                     try {
-                        // Utilisation de l'API Photon (Optimisée pour la recherche rapide)
-                        let url = `https://photon.komoot.io/api/?q=${encodeURIComponent(query)}&lang=fr&limit=5`;
+                        // Changement d'API : Open-Meteo au lieu de Photon
+                        let url = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=5&language=fr&format=json`;
                         
-                        const response = await fetch(url, { signal });
+                        const response = await fetch(url, { signal: currentController.signal });
                         const data = await response.json();
 
-                        if (data.features && data.features.length > 0) {
-                            list.classList.remove("hidden");
+                        // Open-Meteo renvoie "results", pas "features"
+                        if (data.results && data.results.length > 0) {
+                            let hasValidResults = false;
 
-                            data.features.forEach(feature => {
-                                const props = feature.properties;
-                                
-                                // Filtrage (Si on ne veut que des villes pour l'origine)
-                                if (!allowCountries && props.osm_value === 'country') return;
+                            data.results.forEach(place => {
+                                // Filtrage (Open-Meteo n'a pas 'osm_value', on regarde les champs dispo)
+                                // Si c'est un pays, 'feature_code' est souvent 'PCLI' ou on vérifie s'il n'y a pas de ville
+                                const isCountry = !place.admin1 && !place.admin2; // Approximation simple
 
+                                if (!allowCountries && isCountry) return;
+
+                                hasValidResults = true;
                                 const li = document.createElement("li");
-                                li.className = "px-4 py-2 hover:bg-indigo-50 cursor-pointer border-b border-slate-50 transition-colors flex items-center";
+                                li.className = "px-4 py-2 hover:bg-indigo-50 cursor-pointer border-b border-slate-50 transition-colors flex items-center text-left";
                                 
-                                // Icônes simples
-                                let icon = '<i class="fa-solid fa-city text-slate-300 mr-3 text-xs"></i>';
-                                if (props.osm_value === 'country') icon = '<i class="fa-solid fa-globe text-indigo-300 mr-3 text-xs"></i>';
+                                let icon = isCountry 
+                                    ? '<i class="fa-solid fa-globe text-indigo-300 mr-3 text-xs"></i>'
+                                    : '<i class="fa-solid fa-city text-slate-300 mr-3 text-xs"></i>';
                                 
                                 // Construction du texte
-                                let displayText = props.name;
+                                let displayText = place.name;
                                 let secondaryText = "";
                                 
-                                // Logique d'affichage Ville / Pays propre
-                                if (props.osm_value !== 'country') {
-                                    if (props.city && props.city !== props.name) secondaryText += props.city;
-                                    if (props.country) secondaryText += (secondaryText ? ", " : "") + props.country;
-                                }
+                                if (place.admin1) secondaryText += place.admin1;
+                                if (place.country) secondaryText += (secondaryText ? ", " : "") + place.country;
 
                                 li.innerHTML = `
                                     ${icon}
                                     <div class="truncate">
                                         <div class="font-medium text-sm text-slate-700">${displayText}</div>
-                                        ${secondaryText ? `<div class="text-xs text-slate-400 truncate">${secondaryText}</div>` : ''}
+                                        <div class="text-xs text-slate-400 truncate">${secondaryText}</div>
                                     </div>
                                 `;
 
-                                // Gestion du clic (Validation)
                                 li.addEventListener("click", () => {
-                                    if (props.osm_value === 'country') {
-                                        input.value = props.name;
+                                    // Formatage de la valeur finale dans l'input
+                                    if (isCountry) {
+                                        input.value = place.name;
                                     } else {
-                                        input.value = `${props.name}, ${props.country || ''}`; 
+                                        input.value = `${place.name}, ${place.country || ''}`; 
                                     }
-                                    
-                                    // C'est ICI que le formulaire devient valide
                                     input.dataset.valid = "true";
-                                    
                                     list.classList.add("hidden");
                                     list.innerHTML = "";
                                 });
 
                                 list.appendChild(li);
                             });
+
+                            if (hasValidResults) list.classList.remove("hidden");
                         }
                     } catch (err) {
-                        // On ignore les erreurs d'annulation (AbortError) pour ne pas polluer la console
-                        if (err.name !== 'AbortError') {
-                            console.error("Erreur API:", err);
-                        }
+                        // On ignore les erreurs d'annulation
+                        if (err.name !== 'AbortError') console.error(err);
                     }
-                }, 50); // Fin du délai
+                }, 300);
             });
 
-            // Fermeture de la liste au clic extérieur
+            // Fermeture au clic extérieur
             document.addEventListener("click", function(e) {
-                if (e.target !== input) {
+                if (e.target !== input && e.target !== list) {
                     list.classList.add("hidden");
                 }
             });
