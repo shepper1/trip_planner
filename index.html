@@ -16,7 +16,8 @@
         
         /* Background Hero */
         .hero-bg {
-            background-image: linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.95)), url('https://source.unsplash.com/random/1920x1080/?travel,landscape');
+            /* Image fiable (Montagnes/Voyage) au lieu du lien aléatoire cassé */
+            background-image: linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.95)), url('https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?q=80&w=1920&auto=format&fit=crop');
             background-size: cover;
             background-position: center;
         }
@@ -220,21 +221,21 @@
                 </div>
                 <div class="grid md:grid-cols-3 gap-8">
                     <div class="group rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition cursor-pointer">
-                        <div class="h-48 bg-cover bg-center group-hover:scale-105 transition duration-500" style="background-image: url('https://source.unsplash.com/random/400x300/?bali');"></div>
+                        <div class="h-48 bg-cover bg-center group-hover:scale-105 transition duration-500" style="background-image: url('https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=400&q=80');"></div>
                         <div class="p-6 bg-white">
                             <h4 class="font-bold text-xl mb-1">Retraite à Bali</h4>
                             <p class="text-slate-500 text-sm">15 jours • Budget 1800€</p>
                         </div>
                     </div>
                     <div class="group rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition cursor-pointer">
-                        <div class="h-48 bg-cover bg-center group-hover:scale-105 transition duration-500" style="background-image: url('https://source.unsplash.com/random/400x300/?newyork');"></div>
+                        <div class="h-48 bg-cover bg-center group-hover:scale-105 transition duration-500" style="background-image: url('https://images.unsplash.com/photo-1499092346589-b9b6be3e94b2?auto=format&fit=crop&w=400&q=80');"></div>
                         <div class="p-6 bg-white">
                             <h4 class="font-bold text-xl mb-1">Week-end à NY</h4>
                             <p class="text-slate-500 text-sm">4 jours • Budget 2500€</p>
                         </div>
                     </div>
                     <div class="group rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition cursor-pointer">
-                        <div class="h-48 bg-cover bg-center group-hover:scale-105 transition duration-500" style="background-image: url('https://source.unsplash.com/random/400x300/?iceland');"></div>
+                        <div class="h-48 bg-cover bg-center group-hover:scale-105 transition duration-500" style="background-image: url('https://images.unsplash.com/photo-1476610182048-b716b8518aae?auto=format&fit=crop&w=400&q=80');"></div>
                         <div class="p-6 bg-white">
                             <h4 class="font-bold text-xl mb-1">Tour d'Islande</h4>
                             <p class="text-slate-500 text-sm">10 jours • Budget 2000€</p>
@@ -906,7 +907,6 @@
          * @param {string} inputId - L'ID de l'input HTML
          * @param {boolean} allowCountries - Si true, autorise les pays (pour la destination). Si false, cherche surtout des villes.
          */
-
         function setupAutocomplete(inputId, allowCountries = true) {
             const input = document.getElementById(inputId);
             if (!input) return;
@@ -998,7 +998,7 @@
                         // On ignore les erreurs d'annulation
                         if (err.name !== 'AbortError') console.error(err);
                     }
-                }, 300);
+                }, 150);
             });
 
             // Fermeture au clic extérieur
