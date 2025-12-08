@@ -182,13 +182,13 @@
                                     <div class="w-1/2">
                                         <label class="text-xs font-bold text-slate-500 uppercase ml-1">Début</label>
                                         <input type="date" name="date_debut" id="free_input_date_debut" 
-                                            onchange="checkDates('free')"
+                                            onchange="updateEndDate('free')"
                                             class="mt-1 block w-full bg-white border border-slate-200 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500 outline-none text-sm text-slate-600">
                                     </div>
                                     <div class="w-1/2">
                                         <label class="text-xs font-bold text-slate-500 uppercase ml-1">Fin</label>
                                         <input type="date" name="date_fin" id="free_input_date_fin" 
-                                            onchange="checkDates('free')"
+                                            onchange="validateEndDate('free')"
                                             class="mt-1 block w-full bg-white border border-slate-200 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500 outline-none text-sm text-slate-600">
                                     </div>
                                 </div>
@@ -875,30 +875,38 @@
         }
 
         // --- SÉCURITÉ DES DATES (Bloque les dates antérieures) ---
-        function checkDates(prefix) {
+        // 1. Quand on change la date de DÉBUT
+        function updateEndDate(prefix) {
             const startInput = document.getElementById(prefix + '_input_date_debut');
             const endInput = document.getElementById(prefix + '_input_date_fin');
 
-            // Sécurité : si les champs n'existent pas encore dans le DOM
+            if (!startInput || !endInput || !startInput.value) return;
+
+            // A. On interdit de choisir une date de fin avant la date de début (bloque les jours grisés sur mobile)
+            endInput.min = startInput.value;
+
+            // B. AUTO-CORRECTION (La clé du succès sur mobile)
+            // Si la date de fin est vide OU antérieure au début, on la pré-remplit
+            // On met par défaut "Départ + 7 jours" (durée classique)
+            // Cela force le calendrier mobile à s'ouvrir sur le bon mois !
+            if (!endInput.value || endInput.value < startInput.value) {
+                const dateObj = new Date(startInput.value);
+                dateObj.setDate(dateObj.getDate() + 7); // Ajoute 7 jours
+                endInput.value = dateObj.toISOString().split('T')[0];
+            }
+        }
+
+        // 2. Quand on change la date de FIN (Validation douce)
+        function validateEndDate(prefix) {
+            const startInput = document.getElementById(prefix + '_input_date_debut');
+            const endInput = document.getElementById(prefix + '_input_date_fin');
+
             if (!startInput || !endInput) return;
 
-            // 1. MISE À JOUR DU CALENDRIER (UX)
-            // Dès qu'on choisit une date de début, on interdit tout ce qui est avant dans le calendrier de fin
-            if (startInput.value) {
-                endInput.min = startInput.value;
-            }
-
-            // 2. VERIFICATION DES VALEURS (Sécurité)
-            if (startInput.value && endInput.value) {
-                if (endInput.value < startInput.value) {
-                    Swal.fire({
-                        title: 'Date impossible',
-                        text: 'La date de fin ne peut pas être avant la date de début !',
-                        icon: 'warning',
-                        confirmButtonColor: '#4f46e5'
-                    });
-                    endInput.value = ""; // On efface la date invalide
-                }
+            // Si l'utilisateur force une date invalide malgré le "min", on la remet égale au début
+            // Sans crier avec une popup (Swal), on corrige juste silencieusement.
+            if (startInput.value && endInput.value < startInput.value) {
+                endInput.value = startInput.value;
             }
         }
         // --- AUTOCOMPLÉTION (Villes & Pays) ---
