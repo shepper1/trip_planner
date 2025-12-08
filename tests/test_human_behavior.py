@@ -64,7 +64,7 @@ def run():
         page = context.new_page()
 
         print("🌍 Connexion au site...")
-        page.goto("http://127.0.0.1:5500/index.html") 
+        page.goto("http://127.0.0.1:5500/website/index.html") 
         
         flaner_sur_le_site(page)
 
