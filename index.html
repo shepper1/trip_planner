@@ -2,76 +2,47 @@
 <html lang="fr" class="overflow-x-hidden">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"> <title>My Trip Planner - L'IA de vos vacances</title>
-    <link href="./src/tailwind.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pocketbase/0.21.1/pocketbase.umd.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"> 
+    <title>My Trip Planner - L'IA de vos vacances</title>
     
-    <style>
-        /* Utility Classes */
-        .hidden-section { display: none !important; }
-        .fade-in { animation: fadeIn 0.4s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        /* Background Hero */
-        .hero-bg {
-            /* Image fiable (Montagnes/Voyage) au lieu du lien aléatoire cassé */
-            background-image: linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.95)), url('https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?q=80&w=1920&auto=format&fit=crop');
-            background-size: cover;
-            background-position: center;
-        }
+    <link href="tailwind.css" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-        /* FORCE NO HORIZONTAL SCROLL */
-        html, body {
-            max-width: 100%;
-            overflow-x: hidden;
-        }
-
-        .suggestions-list {
-            background: white;
-            position: absolute;
-            width: 100%;
-            z-index: 100;
-            border: 1px solid #e2e8f0;
-            border-radius: 0.5rem;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-        }
-        .hidden { display: none !important; }
-    </style>
+    <link href="style.css" rel="stylesheet">
 </head>
-<body class="bg-white font-sans text-slate-800 overflow-x-hidden">
+<body class="bg-brand-bg font-sans text-brand-dark overflow-x-hidden antialiased selection:bg-brand-accent selection:text-white">
 
     <nav class="absolute w-full top-0 z-50 bg-transparent py-4">
         <div class="w-full max-w-7xl mx-auto px-4 md:px-6"> 
             <div class="flex justify-between items-center">
                 
-                <div class="flex items-center cursor-pointer shrink-0" onclick="router('home')">
-                    <div class="bg-indigo-600 text-white p-1.5 md:p-2 rounded-lg mr-2">
-                        <i class="fa-solid fa-plane-departure text-lg md:text-xl"></i>
+                <div class="flex items-center cursor-pointer shrink-0 group" onclick="router('home')">
+                    <div class="bg-brand-primary text-white p-2 rounded-xl mr-3 shadow-md group-hover:scale-110 transition duration-300">
+                        <i class="fa-solid fa-plane-departure text-xl"></i>
                     </div>
-                    <span class="font-bold text-lg md:text-xl tracking-tight text-slate-900">MyTrip<span class="text-indigo-600">Planner</span></span>
+                    <span class="font-bold text-2xl tracking-tight text-brand-dark font-serif">MyTrip<span class="text-brand-accent">Planner</span></span>
                 </div>
                 
-                <div id="nav-public" class="flex items-center space-x-2 md:space-x-4">
-                    <button onclick="router('auth')" class="text-slate-600 hover:text-indigo-600 font-medium text-sm md:text-base px-2 md:px-3 py-2 transition rounded-lg hover:bg-slate-100/50">
+                <div id="nav-public" class="flex items-center gap-4">
+                    <button onclick="router('auth')" class="text-slate-600 hover:text-brand-primary font-bold text-base px-4 py-2 transition rounded-xl hover:bg-white/80">
                         Connexion
                     </button>
-                    
-                    <button onclick="router('auth', 'signup')" class="bg-slate-900 hover:bg-slate-800 text-white text-xs md:text-base font-bold px-3 py-2 md:px-5 md:py-2.5 rounded-full transition shadow-md hover:shadow-xl transform hover:-translate-y-0.5 whitespace-nowrap">
+                    <button onclick="router('auth', 'signup')" class="bg-brand-dark hover:bg-brand-primary text-white text-base font-bold px-6 py-3 rounded-full transition shadow-lg hover:shadow-brand-primary/30 transform hover:-translate-y-0.5 whitespace-nowrap">
                         S'inscrire
                     </button>
                 </div>
 
-                <div id="nav-private" class="hidden-section flex items-center space-x-2 md:space-x-4">
+                <div id="nav-private" class="hidden flex items-center gap-3">
                     <div class="text-right mr-2 hidden md:block">
-                        <div id="user-display-email" class="text-xs font-bold text-slate-900">...</div>
-                        <div class="text-xs text-indigo-600 font-bold bg-indigo-50 px-2 py-0.5 rounded-full inline-block">Premium</div>
+                        <div id="user-display-email" class="text-xs font-bold text-brand-dark">...</div>
+                        <div class="text-[10px] uppercase text-brand-dark font-bold bg-brand-light px-2 py-0.5 rounded-full inline-block mt-0.5">Premium</div>
                     </div>
-                    <div class="md:hidden text-indigo-600 font-bold text-xs bg-indigo-50 px-2 py-1 rounded-full mr-1">
-                        Pro
-                    </div>
-                    <button onclick="logout()" class="text-slate-400 hover:text-red-500 font-medium px-2 md:px-3" title="Déconnexion">
+                    <div class="md:hidden text-brand-dark font-bold text-xs bg-brand-light px-2 py-1 rounded-full">Pro</div>
+                    <button onclick="logout()" class="text-slate-400 hover:text-brand-accent font-medium px-2 transition" title="Déconnexion">
                         <i class="fa-solid fa-power-off text-lg"></i>
                     </button>
                 </div>
@@ -81,130 +52,145 @@
 
     <div id="view-home" class="app-view">
         
-        <header class="hero-bg min-h-screen flex items-center pt-24 pb-12 relative">
-            <div class="max-w-7xl mx-auto px-6 w-full flex flex-col md:flex-row items-center justify-between">
+        <header class="hero-bg min-h-screen flex items-center pt-20 pb-10 relative">
+            <div class="max-w-7xl mx-auto px-4 md:px-6 w-full flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-12">
                 
-                <div class="md:w-1/2 mb-12 md:mb-0 fade-in z-10">
-                    <span class="inline-block py-1 px-3 rounded-full bg-indigo-100 text-indigo-700 text-xs font-bold tracking-wide mb-4">✨ PLANIFICATEUR IA</span>
-                    <h1 class="text-5xl md:text-6xl font-extrabold text-slate-900 mb-6 leading-tight">
-                        Vos vacances, <br> <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">organisées en 1 clic</span>.
+                <div class="lg:w-1/2 fade-in z-10" style="animation-delay: 0.1s;">
+                    <span class="inline-block py-1 px-3 rounded-full bg-brand-light text-brand-accent text-xs font-bold tracking-wide mb-4 shadow-sm border border-orange-100">
+                        ✨ PLANIFICATEUR IA
+                    </span>
+                    <h1 class="text-4xl md:text-6xl font-extrabold text-brand-dark mb-6 leading-tight font-serif">
+                        Vos vacances, <br> 
+                        <span class="text-brand-accent">
+                                organisées en 1 clic.
+                        </span>
                     </h1>
-                    <p class="text-lg text-slate-600 mb-8 max-w-md leading-relaxed">
-                        Laissez notre IA analyser des milliers d'options pour créer l'itinéraire parfait en 15 minutes chrono.
+                    <p class="text-lg text-slate-600 mb-8 max-w-md leading-relaxed font-medium">
+                        Laissez notre IA analyser des milliers d'options pour créer l'itinéraire parfait, jour par jour, en 15 minutes chrono.
                     </p>
                     
-                    <div class="flex flex-col space-y-4 text-slate-700 font-medium text-lg">
+                    <div class="flex flex-col space-y-3 text-slate-700 font-semibold text-base">
                         <div class="flex items-center">
-                            <i class="fa-solid fa-check-circle text-indigo-500 mr-3"></i> 
-                            100% Personnalisé
+                            <i class="fa-solid fa-check-circle text-brand-primary mr-3"></i> 
+                            100% Personnalisé & Gratuit
                         </div>
                         <div class="flex items-center">
-                            <i class="fa-solid fa-leaf text-emerald-500 mr-3"></i> 
+                            <i class="fa-solid fa-leaf text-emerald-600 mr-3"></i> 
                             Calcul empreinte Carbone inclus
                         </div>
                         <div class="flex items-center">
-                            <i class="fa-solid fa-gift text-purple-500 mr-3"></i> 
-                            1er itinéraire offert
+                            <i class="fa-solid fa-gift text-brand-accent mr-3"></i>
+                            Premier itinéraire offert
                         </div>
                     </div>
                 </div>
 
-                <div class="md:w-5/12 w-full fade-in z-10">
-                    <div class="bg-white p-8 rounded-3xl shadow-2xl border border-slate-100 relative">
-                        <div class="absolute -top-10 -right-10 w-24 h-24 bg-yellow-400 rounded-full blur-2xl opacity-20"></div>
+                <div class="lg:w-5/12 w-full fade-in z-10" style="animation-delay: 0.3s;">
+                    <div class="bg-white p-6 rounded-3xl shadow-2xl border border-slate-100 relative">
                         
-                        <div class="absolute top-4 right-8 flex items-center text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">
-                            <i class="fa-solid fa-leaf mr-1"></i> Option éco-responsable
+                        <div class="flex justify-between items-end mb-6">
+                            <h2 class="text-2xl font-bold text-brand-dark font-serif">Où partez-vous ?</h2>
+                            <div class="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-1 rounded-full border border-emerald-100 uppercase tracking-wide">
+                                <i class="fa-solid fa-leaf mr-1"></i> Option éco-responsable
+                            </div>
                         </div>
-
-                        <h2 class="text-2xl font-bold mb-6 text-slate-800">Où partez-vous ?</h2>
                         
-                        <form id="freeForm" onsubmit="handleFreeForm(event)" class="space-y-4">
-                            <div class="flex items-center justify-between bg-slate-50 p-3 rounded-xl border border-slate-100 cursor-pointer" onclick="document.getElementById('free_surprise').click()">
-                                <div class="flex items-center text-sm font-semibold text-slate-700">
-                                    <i class="fa-solid fa-wand-magic-sparkles text-indigo-500 mr-2"></i> Mode "Surprends-moi"
+                        <form id="freeForm" onsubmit="handleFreeForm(event)" class="space-y-3">
+                            
+                            <input type="hidden" name="origin_lat" id="free_origin_lat">
+                            <input type="hidden" name="origin_lng" id="free_origin_lng">
+                            <input type="hidden" name="dest_lat" id="free_dest_lat">
+                            <input type="hidden" name="dest_lng" id="free_dest_lng">
+                            <input type="hidden" name="dest_type" id="free_dest_type">
+
+                            <div class="flex items-center justify-between bg-slate-50 p-2.5 rounded-xl border border-slate-200 cursor-pointer hover:border-brand-primary/30 transition group" onclick="document.getElementById('free_surprise').click()">
+                                <div class="flex items-center text-sm font-bold text-slate-700 group-hover:text-brand-primary transition">
+                                    <i class="fa-solid fa-wand-magic-sparkles text-brand-accent mr-2"></i> Mode "Surprends-moi"
                                 </div>
                                 <label class="relative inline-flex items-center cursor-pointer pointer-events-none">
                                     <input type="checkbox" id="free_surprise" class="sr-only peer">
-                                    <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:bg-indigo-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
+                                    <div class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:bg-brand-primary peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all shadow-inner"></div>
                                 </label>
                             </div>
 
                             <div id="origin-group">
-                                <label class="text-xs font-bold text-slate-500 uppercase ml-1">Départ de</label>
+                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide ml-1 mb-1">Départ de</label>
                                 <div class="relative">
                                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                        <i class="fa-solid fa-plane-departure text-slate-400"></i>
+                                        <i class="fa-solid fa-plane-departure text-slate-400 text-sm"></i>
                                     </div>
-                                    <input type="text" id="free_origin" name="origin" placeholder="Ex: Paris, Lyon..." required class="pl-10 mt-1 block w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:ring-2 focus:ring-indigo-500 outline-none">
+                                    <input type="text" id="free_origin" name="origin" placeholder="Ex: Paris, Lyon..." required 
+                                        class="pl-10 mt-0.5 block w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-brand-primary focus:bg-white outline-none transition shadow-sm font-medium text-brand-dark">
                                 </div>
                             </div>
 
                             <div id="free_dest_group">
-                                <label class="text-xs font-bold text-slate-500 uppercase ml-1">Destination</label>
+                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide ml-1 mb-1">Destination</label>
                                 <div class="relative">
                                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                        <i class="fa-solid fa-location-dot text-slate-400"></i>
+                                        <i class="fa-solid fa-location-dot text-slate-400 text-sm"></i>
                                     </div>
-                                    <input type="text" id="free_destination" name="destination" placeholder="Ex: Tokyo, Japon" class="pl-10 mt-1 block w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:ring-2 focus:ring-indigo-500 outline-none">
+                                    <input type="text" id="free_destination" name="destination" placeholder="Ex: Tokyo, Japon" 
+                                        class="pl-10 mt-0.5 block w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-brand-primary focus:bg-white outline-none transition shadow-sm font-medium text-brand-dark">
                                 </div>
                             </div>
 
-                            <div class="flex items-center space-x-10 mb-4 ml-1">
-                                <label class="inline-flex items-center cursor-pointer text-sm font-bold text-slate-700 hover:text-indigo-600 transition-colors" title="Je saisis juste une durée">
+                            <div class="flex items-center gap-6 ml-1 pt-1">
+                                <label class="inline-flex items-center cursor-pointer text-xs font-bold text-slate-600 hover:text-brand-primary transition-colors group">
                                     <input type="radio" name="free_mode_type" value="duree" checked 
                                         onchange="toggleDateMode('free', 'duree')" 
-                                        class="mr-2 text-indigo-600 focus:ring-indigo-500 w-4 h-4 cursor-pointer">
-                                    <span><i class="fa-solid fa-paper-plane mr-1.5 opacity-75"></i>Dates flexibles</span>
+                                        class="mr-2 text-brand-primary focus:ring-brand-primary w-4 h-4 cursor-pointer border-slate-300">
+                                    <span class="group-hover:translate-x-0.5 transition-transform"><i class="fa-solid fa-paper-plane mr-1.5 opacity-75"></i>Dates flexibles</span>
                                 </label>
                                 
-                                <label class="inline-flex items-center cursor-pointer text-sm font-bold text-slate-700 hover:text-indigo-600 transition-colors" title="Je saisis mes dates exactes">
+                                <label class="inline-flex items-center cursor-pointer text-xs font-bold text-slate-600 hover:text-brand-primary transition-colors group">
                                     <input type="radio" name="free_mode_type" value="dates" 
                                         onchange="toggleDateMode('free', 'dates')" 
-                                        class="mr-2 text-indigo-600 focus:ring-indigo-500 w-4 h-4 cursor-pointer">
-                                    <span><i class="fa-solid fa-calendar-check mr-1.5 opacity-75"></i>Dates fixes</span>
+                                        class="mr-2 text-brand-primary focus:ring-brand-primary w-4 h-4 cursor-pointer border-slate-300">
+                                    <span class="group-hover:translate-x-0.5 transition-transform"><i class="fa-solid fa-calendar-check mr-1.5 opacity-75"></i>Dates fixes</span>
                                 </label>
                             </div>
 
                             <div class="bg-slate-50 border border-slate-200 rounded-xl p-3">
                                 <div id="free_bloc_duree">
-                                    <label class="text-xs font-bold text-slate-500 uppercase ml-1">Durée (Jours)</label>
+                                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide ml-1 mb-1">Durée (Jours)</label>
                                     <div class="relative">
                                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                            <i class="fa-regular fa-clock text-slate-400"></i>
+                                            <i class="fa-regular fa-clock text-slate-400 text-sm"></i>
                                         </div>
                                         <input type="number" name="duree" id="free_input_duree" placeholder="Ex: 7" min="1" 
-                                            class="pl-10 mt-1 block w-full bg-white border border-slate-200 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500 outline-none text-sm text-slate-600">
+                                            class="pl-10 mt-0.5 block w-full bg-white border border-slate-200 rounded-lg p-2.5 focus:ring-2 focus:ring-brand-primary outline-none text-sm text-brand-dark transition font-bold">
                                     </div>
                                 </div>
 
-                                <div id="free_bloc_dates" class="hidden-section flex space-x-3">
+                                <div id="free_bloc_dates" class="hidden flex gap-3">
                                     <div class="w-1/2">
-                                        <label class="text-xs font-bold text-slate-500 uppercase ml-1">Début</label>
+                                        <label class="block text-[10px] font-bold text-slate-500 uppercase ml-1 mb-1">Début</label>
                                         <input type="date" name="date_debut" id="free_input_date_debut" 
                                             onchange="updateEndDate('free')"
-                                            class="mt-1 block w-full bg-white border border-slate-200 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500 outline-none text-sm text-slate-600">
+                                            class="mt-0.5 block w-full bg-white border border-slate-200 rounded-lg p-2.5 focus:ring-2 focus:ring-brand-primary outline-none text-xs text-brand-dark transition font-medium">
                                     </div>
                                     <div class="w-1/2">
-                                        <label class="text-xs font-bold text-slate-500 uppercase ml-1">Fin</label>
+                                        <label class="block text-[10px] font-bold text-slate-500 uppercase ml-1 mb-1">Fin</label>
                                         <input type="date" name="date_fin" id="free_input_date_fin" 
                                             onchange="validateEndDate('free')"
-                                            class="mt-1 block w-full bg-white border border-slate-200 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500 outline-none text-sm text-slate-600">
+                                            class="mt-0.5 block w-full bg-white border border-slate-200 rounded-lg p-2.5 focus:ring-2 focus:ring-brand-primary outline-none text-xs text-brand-dark transition font-medium">
                                     </div>
                                 </div>
                             </div>
                             
                             <div>
-                                <label class="text-xs font-bold text-slate-500 uppercase ml-1">Email (pour le résultat)</label>
+                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide ml-1 mb-1">Email (pour le résultat)</label>
                                 <div class="relative">
                                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                        <i class="fa-regular fa-envelope text-slate-400"></i>
+                                        <i class="fa-regular fa-envelope text-slate-400 text-sm"></i>
                                     </div>
-                                    <input type="email" name="email" placeholder="votre@email.com" required class="pl-10 mt-1 block w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:ring-2 focus:ring-indigo-500 outline-none">
+                                    <input type="email" name="email" placeholder="votre@email.com" required 
+                                        class="pl-10 mt-0.5 block w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-brand-primary focus:bg-white outline-none transition shadow-sm font-medium">
                                 </div>
                             </div>
                             
-                            <button type="submit" class="w-full bg-indigo-600 text-white font-bold py-4 rounded-xl hover:bg-indigo-700 transition shadow-lg flex justify-center items-center transform hover:-translate-y-1">
+                            <button type="submit" class="w-full bg-brand-primary text-white font-bold text-base py-3.5 rounded-xl hover:bg-brand-secondary transition-all shadow-lg hover:shadow-brand-primary/40 flex justify-center items-center transform hover:-translate-y-0.5 mt-2">
                                 <span>Générer l'itinéraire</span> <i class="fa-solid fa-arrow-right ml-2"></i>
                             </button>
                         </form>
@@ -213,109 +199,114 @@
             </div>
         </header>
 
-        <section class="py-20 bg-white">
+        <section class="py-16 bg-white">
             <div class="max-w-7xl mx-auto px-6">
-                <div class="text-center mb-16">
-                    <h3 class="text-sm font-bold text-indigo-600 uppercase tracking-widest mb-2">Inspiration</h3>
-                    <h2 class="text-3xl font-extrabold text-slate-900">Ils ont voyagé avec nous</h2>
+                <div class="text-center mb-12">
+                    <h3 class="text-xs font-bold text-brand-accent uppercase tracking-widest mb-2 font-serif">Inspiration</h3>
+                    <h2 class="text-3xl font-extrabold text-brand-dark font-serif">Ils ont voyagé avec nous</h2>
                 </div>
                 <div class="grid md:grid-cols-3 gap-8">
-                    <div class="group rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition cursor-pointer">
-                        <div class="h-48 bg-cover bg-center group-hover:scale-105 transition duration-500" style="background-image: url('https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=400&q=80');"></div>
+                    <div class="group rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl hover:shadow-brand-primary/10 transition-all duration-300 cursor-pointer border border-slate-100">
+                        <div class="h-48 bg-cover bg-center group-hover:scale-105 transition duration-700" style="background-image: url('https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=600&q=80');"></div>
                         <div class="p-6 bg-white">
-                            <h4 class="font-bold text-xl mb-1">Retraite à Bali</h4>
-                            <p class="text-slate-500 text-sm">15 jours • Budget 1800€</p>
+                            <div class="flex justify-between items-start mb-2">
+                                <h4 class="font-bold text-xl text-brand-dark group-hover:text-brand-primary transition">Retraite à Bali</h4>
+                                <span class="text-lg">🌿</span>
+                            </div>
+                            <p class="text-slate-500 font-medium text-sm"><i class="fa-regular fa-calendar mr-2"></i>15 jours • 1800€</p>
                         </div>
                     </div>
-                    <div class="group rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition cursor-pointer">
-                        <div class="h-48 bg-cover bg-center group-hover:scale-105 transition duration-500" style="background-image: url('https://images.unsplash.com/photo-1499092346589-b9b6be3e94b2?auto=format&fit=crop&w=400&q=80');"></div>
+                    <div class="group rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl hover:shadow-brand-primary/10 transition-all duration-300 cursor-pointer border border-slate-100">
+                        <div class="h-48 bg-cover bg-center group-hover:scale-105 transition duration-700" style="background-image: url('https://images.unsplash.com/photo-1499092346589-b9b6be3e94b2?auto=format&fit=crop&w=600&q=80');"></div>
                         <div class="p-6 bg-white">
-                            <h4 class="font-bold text-xl mb-1">Week-end à NY</h4>
-                            <p class="text-slate-500 text-sm">4 jours • Budget 2500€</p>
+                            <div class="flex justify-between items-start mb-2">
+                                <h4 class="font-bold text-xl text-brand-dark group-hover:text-brand-primary transition">Week-end à NY</h4>
+                                <span class="text-lg">🗽</span>
+                            </div>
+                            <p class="text-slate-500 font-medium text-sm"><i class="fa-regular fa-calendar mr-2"></i>4 jours • 2500€</p>
                         </div>
                     </div>
-                    <div class="group rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition cursor-pointer">
-                        <div class="h-48 bg-cover bg-center group-hover:scale-105 transition duration-500" style="background-image: url('https://images.unsplash.com/photo-1476610182048-b716b8518aae?auto=format&fit=crop&w=400&q=80');"></div>
+                    <div class="group rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl hover:shadow-brand-primary/10 transition-all duration-300 cursor-pointer border border-slate-100">
+                        <div class="h-48 bg-cover bg-center group-hover:scale-105 transition duration-700" style="background-image: url('https://images.unsplash.com/photo-1476610182048-b716b8518aae?auto=format&fit=crop&w=600&q=80');"></div>
                         <div class="p-6 bg-white">
-                            <h4 class="font-bold text-xl mb-1">Tour d'Islande</h4>
-                            <p class="text-slate-500 text-sm">10 jours • Budget 2000€</p>
+                            <div class="flex justify-between items-start mb-2">
+                                <h4 class="font-bold text-xl text-brand-dark group-hover:text-brand-primary transition">Tour d'Islande</h4>
+                                <span class="text-lg">🌋</span>
+                            </div>
+                            <p class="text-slate-500 font-medium text-sm"><i class="fa-regular fa-calendar mr-2"></i>10 jours • 2000€</p>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
+
+        <footer class="bg-slate-50 border-t border-slate-200 py-10 mt-10">
+            <div class="max-w-4xl mx-auto px-6 text-center">
+                <p class="font-serif text-xl text-brand-dark mb-4 font-bold">
+                    MyTrip<span class="text-brand-accent">Planner</span>
+                </p>
+
+                <div class="flex justify-center gap-6 text-xs text-slate-500 mb-6 font-semibold">
+                    <a href="#" class="hover:text-brand-primary transition hover:underline">Mentions Légales</a>
+                    <a href="#" class="hover:text-brand-primary transition hover:underline">CGU</a>
+                    <a href="#" class="hover:text-brand-primary transition hover:underline">Confidentialité</a>
+                </div>
+
+                <p class="text-xs text-slate-400 mb-4">
+                    &copy; 2025 MyTripPlanner. Tous droits réservés.
+                </p>
+
+                <div class="flex justify-center">
+                    <p class="text-[10px] text-slate-400 uppercase tracking-widest px-3 py-1 border border-slate-200 rounded-full inline-block">
+                        🤖 Illustrations générées par IA
+                    </p>
+                </div>
+            </div>
+        </footer>
     </div>
 
-    <div id="view-auth" class="app-view hidden-section min-h-screen bg-slate-50 flex items-center justify-center pt-20 px-4">
+    <div id="view-auth" class="app-view hidden min-h-screen bg-brand-bg flex items-center justify-center pt-20 px-4">
         <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md fade-in relative">
             <button onclick="router('home')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-xl"></i></button>
+            <h2 id="auth-title" class="text-2xl font-bold mb-2 text-center text-brand-dark font-serif">Bienvenue</h2>
+            <p id="auth-subtitle" class="text-slate-500 text-sm text-center mb-6">Accédez à votre espace membre.</p>
+            <div id="auth-error" class="hidden bg-red-100 text-red-700 p-2 rounded-lg text-xs text-center mb-4"></div>
             
-            <h2 id="auth-title" class="text-3xl font-bold mb-2 text-center text-slate-900">Bienvenue</h2>
-            <p id="auth-subtitle" class="text-slate-500 text-center mb-8">Accédez à votre espace membre.</p>
-            
-            <div id="auth-error" class="hidden-section bg-red-100 text-red-700 p-3 rounded-lg text-sm text-center mb-4"></div>
-            
-
             <form onsubmit="handleAuth(event)" class="space-y-4">
-                <div id="group-name" class="hidden-section">
-                    <label class="block text-sm font-bold text-slate-700 mb-1">Prénom</label>
-                    <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <i class="fa-solid fa-user text-slate-400"></i>
-                        </div>
-                        <input type="text" id="auth-name" placeholder="Votre prénom" class="pl-10 w-full border border-slate-300 rounded-lg p-3 focus:ring-2 focus:ring-indigo-500 outline-none">
-                    </div>
+                <div id="group-name" class="hidden">
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Prénom</label>
+                    <input type="text" id="auth-name" placeholder="Votre prénom" class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-brand-primary outline-none">
                 </div>
-
                 <div>
-                    <label class="block text-sm font-bold text-slate-700 mb-1">Email</label>
-                    <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <i class="fa-regular fa-envelope text-slate-400"></i>
-                        </div>
-                        <input type="email" id="auth-email" required placeholder="votre@email.com" class="pl-10 w-full border border-slate-300 rounded-lg p-3 focus:ring-2 focus:ring-indigo-500 outline-none">
-                    </div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Email</label>
+                    <input type="email" id="auth-email" required placeholder="votre@email.com" class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-brand-primary outline-none">
                 </div>
-
                 <div>
-                    <label class="block text-sm font-bold text-slate-700 mb-1">Mot de passe</label>
-                    <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <i class="fa-solid fa-lock text-slate-400"></i>
-                        </div>
-                        <input type="password" id="auth-password" required minlength="8" placeholder="8 caractères minimum" class="pl-10 w-full border border-slate-300 rounded-lg p-3 focus:ring-2 focus:ring-indigo-500 outline-none">
-                    </div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Mot de passe</label>
+                    <input type="password" id="auth-password" required minlength="8" class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-brand-primary outline-none">
                 </div>
-
-                <div id="group-password-confirm" class="hidden-section">
-                    <label class="block text-sm font-bold text-slate-700 mb-1">Confirmer Mot de passe</label>
-                    <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <i class="fa-solid fa-check-double text-slate-400"></i>
-                        </div>
-                        <input type="password" id="auth-password-confirm" placeholder="Répétez le mot de passe" class="pl-10 w-full border border-slate-300 rounded-lg p-3 focus:ring-2 focus:ring-indigo-500 outline-none">
-                    </div>
+                <div id="group-password-confirm" class="hidden">
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Confirmer</label>
+                    <input type="password" id="auth-password-confirm" class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-brand-primary outline-none">
                 </div>
-                
-                <button type="submit" id="auth-btn-submit" class="w-full bg-indigo-600 text-white font-bold py-3 rounded-lg hover:bg-indigo-700 transition shadow-md">
+                <button type="submit" id="auth-btn-submit" class="w-full bg-brand-primary text-white font-bold py-3 rounded-xl hover:bg-brand-secondary transition shadow-md mt-2 text-sm">
                     Se connecter
                 </button>
             </form>
-            
-            <div class="mt-6 text-center pt-6 border-t border-slate-100">
-                <button onclick="toggleAuthMode()" id="auth-switch-text" class="text-indigo-600 font-bold text-sm hover:underline">Pas encore de compte ? Créer un compte</button>
+            <div class="mt-6 text-center pt-4 border-t border-slate-100">
+                <button onclick="toggleAuthMode()" id="auth-switch-text" class="text-brand-primary font-bold text-xs hover:underline">Pas encore de compte ? Créer un compte</button>
             </div>
         </div>
     </div>
 
-    <div id="view-dashboard" class="app-view hidden-section min-h-screen bg-slate-50 pt-24 pb-12 px-4">
+    <div id="view-dashboard" class="app-view hidden min-h-screen bg-brand-bg pt-24 pb-12 px-4">
         <div class="max-w-6xl mx-auto fade-in">
             <div class="flex justify-between items-center mb-8">
                 <div>
-                    <h1 class="text-3xl font-bold text-slate-900">Mon Espace</h1>
-                    <p class="text-slate-500">Gérez vos voyages.</p>
+                    <h1 class="text-3xl font-bold text-brand-dark font-serif">Mon Espace</h1>
+                    <p class="text-slate-500 text-sm">Gérez vos voyages.</p>
                 </div>
-                <button onclick="showModal('modal-new-trip')" class="bg-indigo-600 text-white px-6 py-3 rounded-xl font-bold shadow-lg hover:bg-indigo-700 transition">
+                <button onclick="showModal('modal-new-trip')" class="bg-brand-primary text-white px-5 py-2.5 rounded-xl font-bold shadow-lg hover:bg-brand-secondary transition text-sm">
                     <i class="fa-solid fa-plus mr-2"></i> Nouveau Voyage
                 </button>
             </div>
@@ -323,59 +314,59 @@
             <div class="grid md:grid-cols-3 gap-6 mb-10">
                 <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
                     <p class="text-xs font-bold text-slate-400 uppercase">Crédits</p>
-                    <p class="text-3xl font-extrabold text-indigo-600" id="dash-credits">0</p>
+                    <p class="text-3xl font-extrabold text-brand-primary" id="dash-credits">0</p>
                 </div>
                 <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 col-span-2">
                     <p class="text-xs font-bold text-slate-400 uppercase">Statut</p>
-                    <p class="text-lg font-bold text-slate-800">Membre Standard</p>
+                    <p class="text-lg font-bold text-brand-dark">Membre Standard</p>
                 </div>
             </div>
 
             <div class="bg-white p-12 rounded-2xl text-center border border-slate-100">
                 <i class="fa-solid fa-map-location-dot text-4xl text-slate-300 mb-4"></i>
-                <h3 class="text-xl font-bold text-slate-800">Aucun voyage pour l'instant</h3>
-                <p class="text-slate-500">Utilisez vos crédits pour générer votre premier itinéraire expert.</p>
+                <h3 class="text-xl font-bold text-brand-dark font-serif">Aucun voyage pour l'instant</h3>
+                <p class="text-slate-500 text-sm">Utilisez vos crédits pour générer votre premier itinéraire expert.</p>
             </div>
         </div>
     </div>
 
-    <div id="modal-new-trip" class="hidden-section fixed inset-0 bg-slate-900/50 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+    <div id="modal-new-trip" class="hidden fixed inset-0 bg-slate-900/50 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto fade-in">
             <div class="p-6 border-b border-slate-100 flex justify-between items-center sticky top-0 bg-white z-10">
-                <h3 class="text-xl font-bold text-slate-900">Créer un voyage Expert</h3>
-                <button onclick="hideModal('modal-new-trip')" class="text-slate-400 hover:text-red-500"><i class="fa-solid fa-xmark text-xl"></i></button>
+                <h3 class="text-lg font-bold text-brand-dark font-serif">Créer un voyage Expert</h3>
+                <button onclick="hideModal('modal-new-trip')" class="text-slate-400 hover:text-red-500"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
             
-            <div class="p-8">
-                <form id="premiumForm" onsubmit="handlePremiumForm(event)" class="space-y-6">
-                    <div class="flex items-center justify-between bg-indigo-50 p-4 rounded-xl border border-indigo-100 cursor-pointer" onclick="document.getElementById('prem_surprise').click()">
-                        <div class="flex items-center font-bold text-indigo-800"><i class="fa-solid fa-wand-magic-sparkles mr-2"></i> Mode Surprise (L'IA choisit tout)</div>
+            <div class="p-6">
+                <form id="premiumForm" onsubmit="handlePremiumForm(event)" class="space-y-4">
+                    <div class="flex items-center justify-between bg-brand-light/30 p-3 rounded-xl border border-brand-light cursor-pointer hover:bg-brand-light/50 transition" onclick="document.getElementById('prem_surprise').click()">
+                        <div class="flex items-center font-bold text-brand-dark text-sm"><i class="fa-solid fa-wand-magic-sparkles mr-2 text-brand-accent"></i> Mode Surprise</div>
                         <label class="relative inline-flex items-center cursor-pointer pointer-events-none">
                             <input type="checkbox" id="prem_surprise" name="surprise" class="sr-only peer">
-                            <div class="w-11 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:bg-indigo-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
+                            <div class="w-9 h-5 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:bg-brand-primary peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all"></div>
                         </label>
                     </div>
 
                     <div>
                          <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Ville de départ</label>
-                         <input type="text" id="prem_origin" name="origin" placeholder="Ex: Bordeaux" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-3 outline-none focus:ring-2 focus:ring-indigo-500">
+                         <input type="text" id="prem_origin" name="origin" placeholder="Ex: Bordeaux" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-sm outline-none focus:ring-2 focus:ring-brand-primary">
                     </div>
 
                     <div class="grid md:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Destination</label>
-                            <input type="text" id="prem_dest" name="destination" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-3 outline-none focus:ring-2 focus:ring-indigo-500">
+                            <input type="text" id="prem_dest" name="destination" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-sm outline-none focus:ring-2 focus:ring-brand-primary">
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Budget Total</label>
-                            <input type="number" name="budget" placeholder="Ex: 2000€" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-3 outline-none focus:ring-2 focus:ring-indigo-500">
+                            <input type="number" name="budget" placeholder="Ex: 2000€" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-sm outline-none focus:ring-2 focus:ring-brand-primary">
                         </div>
                     </div>
 
                     <div class="grid md:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Rythme</label>
-                            <select name="rythme" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-3 outline-none">
+                            <select name="rythme" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-sm outline-none focus:ring-2 focus:ring-brand-primary">
                                 <option>Cool (Détente)</option>
                                 <option>Modéré (Equilibré)</option>
                                 <option>Intensif (Tout voir)</option>
@@ -383,7 +374,7 @@
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Type Logement</label>
-                            <select name="logement" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-3 outline-none">
+                            <select name="logement" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-sm outline-none focus:ring-2 focus:ring-brand-primary">
                                 <option>Hôtel</option>
                                 <option>Airbnb / Appart</option>
                                 <option>Auberge</option>
@@ -393,629 +384,19 @@
 
                     <div>
                         <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Intérêts Spécifiques</label>
-                        <textarea name="interets" rows="3" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-3 outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
+                        <textarea name="interets" rows="2" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-sm outline-none focus:ring-2 focus:ring-brand-primary"></textarea>
                     </div>
 
-                    <button type="submit" class="w-full bg-slate-900 text-white font-bold py-4 rounded-xl hover:bg-slate-800 transition shadow-lg">
+                    <button type="submit" class="w-full bg-brand-dark text-white font-bold py-3 rounded-xl hover:bg-black transition shadow-lg text-sm">
                         Lancer la recherche (1 Crédit)
                     </button>
                 </form>
             </div>
         </div>
     </div>
-
-    <script>
-        // --- CONFIGURATION ---
-        const PB_URL = "https://api.mytripplanner.fr/";
-        
-        // VOS URLS DE WEBHOOK
-        const WEBHOOK_FREE = "https://api.mytripplanner.fr/webhook/695e2724-613b-4430-bdc5-9b07dbe38fca"; 
-        const WEBHOOK_PREMIUM = "https://api.mytripplanner.fr/webhook/032ddc39-7ac3-4daa-98a6-5ae43dc25338";
-
-        // Initialisation PocketBase
-        const pb = new PocketBase(PB_URL);
-
-        // État de l'interface auth
-        let isSignupMode = false;
-
-        // --- 1. GESTION DU FLUX GRATUIT ---
-        async function handleFreeForm(e) {
-            e.preventDefault();
-            const form = e.target;
-            const btn = form.querySelector('button[type="submit"]');
-            const originalBtnText = btn.innerHTML;
-            
-            // 1. Récupération des données
-            const formData = new FormData(form);
-            const data = Object.fromEntries(formData.entries());
-            data.is_surprise = document.getElementById('free_surprise').checked;
-
-            // 2. VALIDATION INTELLIGENTE (Free)    
-            // VERIFICATION ORIGINE (Doit être sélectionné dans la liste)
-            const originInput = document.getElementById('free_origin');
-            
-            // On vérifie si l'input a du texte ET si data-valid est "true"
-            // (Note: data-valid est géré par la nouvelle fonction setupAutocomplete)
-            if (!originInput.value || originInput.dataset.valid !== "true") {
-                Swal.fire('Ville inconnue', 'Veuillez sélectionner une ville de départ dans la liste déroulante.', 'warning');
-                return; // On arrête tout ici
-            }
-
-            if (!data.email || !data.email.trim()) {
-                Swal.fire('Oups', 'L\'email est obligatoire.', 'warning');
-                return;
-            }
-
-            // VERIFICATION DESTINATION
-            // Si ce n'est pas une surprise, on doit vérifier la validité de la sélection
-            const destInput = document.getElementById('free_destination');
-            if (!data.is_surprise) {
-                if (!destInput.value || destInput.dataset.valid !== "true") {
-                    Swal.fire('Destination inconnue', 'Veuillez sélectionner une destination dans la liste ou cocher "Surprends-moi".', 'warning');
-                    return; // On arrête tout ici
-                }
-            }
-
-            // Note : Les dates sont maintenant FACULTATIVES. 
-            // Si elles sont vides, n8n/IA choisira la "Période Idéale".
-
-            // UI: Chargement
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin mr-2"></i> Envoi en cours...';
-
-            try {
-                const response = await fetch(WEBHOOK_FREE, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                });
-
-                if (response.ok) {
-                    // MESSAGE DE SUCCÈS (Option 1 - Rassurante)
-                    Swal.fire({
-                        title: 'Décollage imminent ! ✈️',
-                        html: `L'IA génère votre itinéraire sur mesure.<br><br>
-                               Vous allez recevoir le résultat à <b>${data.email}</b> d'ici 5 à 15 minutes.<br>
-                               <small class="text-slate-400">(Pensez à vérifier vos spams !)</small>`,
-                        icon: 'success',
-                        confirmButtonColor: '#4f46e5',
-                        confirmButtonText: 'Parfait, je surveille ma boîte !'
-                    });
-                        
-                    // --- 1. SAUVEGARDE DU CONTEXTE (Ce qu'on veut garder) ---
-                    const currentMode = document.querySelector('input[name="free_mode_type"]:checked').value;
-                    const currentOrigin = document.getElementById('free_origin').value;
-                    const currentEmail = form.querySelector('input[name="email"]').value; // ON SAUVEGARDE L'EMAIL
-
-                    // --- 2. NETTOYAGE TOTAL (On efface tout le reste : destination, dates, etc.) ---
-                    form.reset(); 
-
-                    // --- 3. RESTAURATION INTELLIGENTE ---
-
-                    // A. On remet la Ville de départ
-                    const originInput = document.getElementById('free_origin');
-                    if (originInput) {
-                        originInput.value = currentOrigin;
-                        originInput.dataset.valid = "true"; // On la garde valide
-                    }
-
-                    // B. On remet l'Email
-                    const emailInput = form.querySelector('input[name="email"]');
-                    if (emailInput) {
-                        emailInput.value = currentEmail;
-                    }
-
-                    // C. On remet le Mode (Dates ou Durée)
-                    const radioToRestore = document.querySelector(`input[name="free_mode_type"][value="${currentMode}"]`);
-                    if (radioToRestore) {
-                        radioToRestore.checked = true;
-                        toggleDateMode('free', currentMode); // Met à jour l'affichage des champs
-                    }
-
-                    // D. On s'assure que "Surprise" est bien décoché (c'est une nouvelle recherche)
-                    const surpriseCheck = document.getElementById('free_surprise');
-                    if(surpriseCheck) surpriseCheck.checked = false;
-                    
-                    // E. On remet le champ destination à neuf (vierge et débloqué)
-                    const destInput = document.getElementById('free_destination');
-                    if(destInput) {
-                        destInput.disabled = false;
-                        destInput.value = "";
-                        destInput.classList.remove('opacity-50', 'cursor-not-allowed');
-                        destInput.dataset.valid = "false"; // La destination est vide, donc invalide pour l'instant
-                    }
-                } else {
-                    throw new Error("Erreur lors de l'envoi au webhook");
-                }
-
-            } catch (error) {
-                console.error(error);
-                Swal.fire({
-                    title: 'Erreur technique',
-                    text: "Le serveur ne répond pas. Veuillez réessayer.",
-                    icon: 'error',
-                    confirmButtonColor: '#ef4444'
-                });
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = originalBtnText;
-            }
-        }
-
-        // --- 2. GESTION DU FLUX PREMIUM ---
-        async function handlePremiumForm(e) {
-            e.preventDefault();
-            
-            // Vérification connexion
-            if (!pb.authStore.isValid || !pb.authStore.model) {
-                Swal.fire('Non connecté', 'Veuillez vous connecter pour accéder au service Premium.', 'warning');
-                return;
-            }
-
-            const user = pb.authStore.model;
-            const currentCredits = user.credits || 0;
-
-            // Vérification Crédits
-            if (currentCredits < 1) {
-                Swal.fire({
-                    title: 'Crédits insuffisants',
-                    text: "Il vous faut au moins 1 crédit pour générer un voyage Expert.",
-                    icon: 'warning',
-                    confirmButtonText: 'Recharger',
-                    confirmButtonColor: '#4f46e5'
-                });
-                return;
-            }
-
-            const form = e.target;
-            const btn = form.querySelector('button[type="submit"]');
-            const originalBtnText = btn.innerHTML;
-            
-            const formData = new FormData(form);
-            const data = Object.fromEntries(formData.entries());
-            
-            // Ajout des métadonnées utilisateur
-            data.user_id = user.id;
-            data.user_email = user.email;
-            data.is_surprise = document.getElementById('prem_surprise').checked;
-
-            // 2. VALIDATION INTELLIGENTE (Premium)
-            // Origin & Budget sont critiques pour l'expert
-            if (!data.origin || !data.origin.trim()) {
-                Swal.fire('Info manquante', 'La ville de départ est requise.', 'warning');
-                return;
-            }
-            if (!data.budget || !data.budget.trim()) {
-                Swal.fire('Budget requis', 'Pour un voyage Expert, le budget est essentiel.', 'warning');
-                return;
-            }
-
-            // Destination : Obligatoire SAUF si Surprise
-            if (!data.is_surprise && (!data.destination || !data.destination.trim())) {
-                Swal.fire('Destination manquante', 'Indiquez une destination ou cochez le mode "Surprends-moi".', 'warning');
-                return;
-            }
-            
-            // Dates : Facultatives (L'IA fera une estimation "Période Idéale")
-
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin mr-2"></i> Analyse IA...';
-
-            try {
-                const response = await fetch(WEBHOOK_PREMIUM, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                });
-
-                if (response.ok) {
-                    // Mise à jour visuelle des crédits
-                    const newCredits = currentCredits - 1;
-                    document.getElementById('dash-credits').innerText = newCredits;
-                    pb.authStore.model.credits = newCredits; 
-
-                    hideModal('modal-new-trip');
-
-                    Swal.fire({
-                        title: 'Voyage Expert lancé !',
-                        html: `Votre demande est partie. Notre IA analyse les meilleures options.<br><b>Nouveau solde : ${newCredits} crédits.</b>`,
-                        icon: 'success',
-                        confirmButtonColor: '#4f46e5'
-                    });
-                    
-                    form.reset();
-                    // Reset UI Surprise
-                    document.getElementById('prem_surprise').checked = false;
-                    document.getElementById('prem_dest').disabled = false;
-                    document.getElementById('prem_dest').classList.remove('opacity-50', 'cursor-not-allowed');
-
-                } else {
-                    throw new Error("Erreur webhook premium");
-                }
-
-            } catch (error) {
-                console.error(error);
-                Swal.fire({
-                    title: 'Erreur technique',
-                    text: "Impossible de contacter le service Premium.",
-                    icon: 'error',
-                    confirmButtonColor: '#ef4444'
-                });
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = originalBtnText;
-            }
-        }
-
-        // --- ROUTEUR STRICT ---
-        function router(viewName, mode = null) {
-            document.querySelectorAll('.app-view').forEach(el => el.classList.add('hidden-section'));
-            
-            const target = document.getElementById('view-' + viewName);
-            if (target) target.classList.remove('hidden-section');
-
-            if (viewName === 'auth') {
-                isSignupMode = (mode === 'signup');
-                updateAuthUI();
-                document.getElementById('auth-error').classList.add('hidden-section');
-                document.getElementById('auth-email').value = '';
-                document.getElementById('auth-password').value = '';
-            }
-            updateNavbar();
-        }
-
-        // --- GESTION NAVBAR ---
-        function updateNavbar() {
-            const isLoggedIn = pb.authStore.isValid;
-            const navPublic = document.getElementById('nav-public');
-            const navPrivate = document.getElementById('nav-private');
-            
-            if (isLoggedIn) {
-                navPublic.classList.add('hidden-section');
-                navPrivate.classList.remove('hidden-section');
-                if(pb.authStore.model) {
-                    document.getElementById('user-display-email').innerText = pb.authStore.model.email;
-                    const credits = pb.authStore.model.credits || 0;
-                    document.getElementById('dash-credits').innerText = credits;
-                }
-            } else {
-                navPublic.classList.remove('hidden-section');
-                navPrivate.classList.add('hidden-section');
-            }
-        }
-
-        // --- AUTH LOGIC ---
-        function toggleAuthMode() {
-            isSignupMode = !isSignupMode;
-            updateAuthUI();
-        }
-
-        function updateAuthUI() {
-            const nameGroup = document.getElementById('group-name');
-            const title = document.getElementById('auth-title');
-            const sub = document.getElementById('auth-subtitle');
-            const btn = document.getElementById('auth-btn-submit');
-            const switchText = document.getElementById('auth-switch-text');
-            const confirmGroup = document.getElementById('group-password-confirm');
-
-            if (isSignupMode) {
-                title.innerText = "Créer un compte";
-                sub.innerText = "Rejoignez TripPlanner pour sauvegarder vos voyages.";
-                btn.innerText = "S'inscrire";
-                switchText.innerText = "Déjà inscrit ? Se connecter";
-                confirmGroup.classList.remove('hidden-section');
-                nameGroup.classList.remove('hidden-section');
-            } else {
-                title.innerText = "Connexion";
-                sub.innerText = "Accédez à votre espace membre.";
-                btn.innerText = "Se connecter";
-                switchText.innerText = "Pas encore de compte ? S'inscrire";
-                confirmGroup.classList.add('hidden-section');
-                nameGroup.classList.add('hidden-section');
-            }
-        }
-
-        // --- LOGIQUE D'AUTHENTIFICATION & INSCRIPTION ---
-        async function handleAuth(e) {
-            e.preventDefault();
-            
-            const email = document.getElementById('auth-email').value;
-            const password = document.getElementById('auth-password').value;
-            const btn = document.getElementById('auth-btn-submit');
-            
-            // UI: Chargement
-            const originalText = btn.innerText;
-            btn.disabled = true;
-            btn.innerText = "Chargement...";
-
-            try {
-                if (isSignupMode) {
-                    // --- CAS 1 : INSCRIPTION ---
-                    const passConfirm = document.getElementById('auth-password-confirm').value;
-                    const firstName = document.getElementById('auth-name').value;
-
-                    // Validation locale
-                    if (password !== passConfirm) {
-                        throw new Error("Les mots de passe ne correspondent pas.");
-                    }
-                    if (password.length < 8) {
-                        throw new Error("Le mot de passe doit faire au moins 8 caractères.");
-                    }
-                    if (!firstName || !firstName.trim()) {
-                        throw new Error("Merci d'indiquer votre prénom.");
-                    }
-                    
-                    // 1. Création de l'utilisateur dans PocketBase
-                    await pb.collection('users').create({
-                        email: email,
-                        password: password,
-                        passwordConfirm: passConfirm,
-                        name: firstName,
-                        credits: 0 // On initialise à 0 (ou 1 si vous voulez offrir un essai)
-                    });
-
-                    // 2. Connexion automatique juste après (car create ne connecte pas)
-                    await pb.collection('users').authWithPassword(email, password);
-
-                    // Message de succès
-                    Swal.fire({
-                        title: 'Bienvenue !',
-                        text: 'Votre compte a été créé avec succès.',
-                        icon: 'success',
-                        timer: 2000,
-                        showConfirmButton: false
-                    });
-
-                } else {
-                    // --- CAS 2 : CONNEXION ---
-                    await pb.collection('users').authWithPassword(email, password);
-                }
-
-                // Redirection vers le Dashboard
-                router('dashboard');
-
-            } catch (err) {
-                console.error(err);
-                
-                // Gestion des erreurs spécifiques PocketBase
-                let message = err.message;
-                
-                // Erreur 400 souvent liée à un email déjà pris ou mot de passe trop court
-                if (err.status === 400) {
-                    message = "Données invalides. Cet email est peut-être déjà utilisé.";
-                }
-                // Erreur d'identifiants incorrects
-                if (err.status === 400 && !isSignupMode) {
-                     message = "Email ou mot de passe incorrect.";
-                }
-
-                Swal.fire({
-                    title: 'Erreur',
-                    text: message,
-                    icon: 'error',
-                    confirmButtonColor: '#ef4444'
-                });
-            } finally {
-                // Reset du bouton
-                btn.disabled = false;
-                btn.innerText = originalText;
-            }
-        }
-
-        function logout() {
-            pb.authStore.clear();
-            router('home');
-        }
-
-        // --- MODAL ---
-        function showModal(id) { document.getElementById(id).classList.remove('hidden-section'); }
-        function hideModal(id) { document.getElementById(id).classList.add('hidden-section'); }
-
-        // --- SURPRISE LOGIC ---
-        ['free', 'prem'].forEach(prefix => {
-            const check = document.getElementById(prefix + '_surprise');
-            const destInput = document.getElementById(prefix + (prefix === 'free' ? '_destination' : '_dest'));
-            
-            if(check && destInput) {
-                check.addEventListener('change', function() {
-                    if(this.checked) {
-                        destInput.disabled = true;
-                        destInput.value = "Choix de l'IA...";
-                        destInput.classList.add('opacity-50', 'cursor-not-allowed');
-                    } else {
-                        destInput.disabled = false;
-                        destInput.value = "";
-                        destInput.classList.remove('opacity-50', 'cursor-not-allowed');
-                    }
-                });
-            }
-        });
-
-        // INIT
-        document.addEventListener('DOMContentLoaded', () => {
-            if(pb.authStore.isValid) router('dashboard');
-            else router('home');
     
-            // 1. Formulaire Gratuit (Accueil)
-            setupAutocomplete('free_origin', false);      // false = Villes seulement (pas de pays seul en origine)
-            setupAutocomplete('free_destination', true);  // true = Villes OU Pays autorisés
-
-            // 2. Formulaire Premium (Modal)
-            setupAutocomplete('prem_origin', false);
-            setupAutocomplete('prem_dest', true);
-        });
-        
-        // --- LOGIQUE BASCULE DATES / DURÉE ---
-        function toggleDateMode(prefix, mode) {
-            const blocDuree = document.getElementById(prefix + '_bloc_duree');
-            const blocDates = document.getElementById(prefix + '_bloc_dates');
-            
-            // Inputs pour les vider
-            const inputDuree = document.getElementById(prefix + '_input_duree');
-            const inputStart = document.getElementById(prefix + '_input_date_debut');
-            const inputEnd = document.getElementById(prefix + '_input_date_fin');
-
-            if (mode === 'duree') {
-                // Affiche Durée, Cache Dates
-                blocDuree.classList.remove('hidden-section');
-                blocDates.classList.add('hidden-section');
-                
-                // Nettoyage : On vide les dates car on utilise la durée
-                if(inputStart) inputStart.value = "";
-                if(inputEnd) inputEnd.value = "";
-                
-            } else {
-                // Affiche Dates, Cache Durée
-                blocDates.classList.remove('hidden-section');
-                blocDuree.classList.add('hidden-section');
-                
-                // Nettoyage : On vide la durée car on utilise les dates
-                if(inputDuree) inputDuree.value = "";
-            }
-        }
-
-        // --- SÉCURITÉ DES DATES (Bloque les dates antérieures) ---
-        // 1. Quand on change la date de DÉBUT
-        function updateEndDate(prefix) {
-            const startInput = document.getElementById(prefix + '_input_date_debut');
-            const endInput = document.getElementById(prefix + '_input_date_fin');
-
-            if (!startInput || !endInput || !startInput.value) return;
-
-            // A. On interdit de choisir une date de fin avant la date de début (bloque les jours grisés sur mobile)
-            endInput.min = startInput.value;
-
-            // B. AUTO-CORRECTION (La clé du succès sur mobile)
-            // Si la date de fin est vide OU antérieure au début, on la pré-remplit
-            // On met par défaut "Départ + 7 jours" (durée classique)
-            // Cela force le calendrier mobile à s'ouvrir sur le bon mois !
-            if (!endInput.value || endInput.value < startInput.value) {
-                const dateObj = new Date(startInput.value);
-                dateObj.setDate(dateObj.getDate() + 7); // Ajoute 7 jours
-                endInput.value = dateObj.toISOString().split('T')[0];
-            }
-        }
-
-        // 2. Quand on change la date de FIN (Validation douce)
-        function validateEndDate(prefix) {
-            const startInput = document.getElementById(prefix + '_input_date_debut');
-            const endInput = document.getElementById(prefix + '_input_date_fin');
-
-            if (!startInput || !endInput) return;
-
-            // Si l'utilisateur force une date invalide malgré le "min", on la remet égale au début
-            // Sans crier avec une popup (Swal), on corrige juste silencieusement.
-            if (startInput.value && endInput.value < startInput.value) {
-                endInput.value = startInput.value;
-            }
-        }
-        // --- AUTOCOMPLÉTION (Villes & Pays) ---
-        /**
-         * Configure l'autocomplétion sur un champ input spécifique
-         * @param {string} inputId - L'ID de l'input HTML
-         * @param {boolean} allowCountries - Si true, autorise les pays (pour la destination). Si false, cherche surtout des villes.
-         */
-        function setupAutocomplete(inputId, allowCountries = true) {
-            const input = document.getElementById(inputId);
-            if (!input) return;
-
-            input.dataset.valid = "false";
-            
-            let list = document.createElement("ul");
-            // Z-index très élevé et positionnement forcé
-            list.className = "suggestions-list absolute z-[1000] top-full left-0 right-0 bg-white border border-slate-200 rounded-lg shadow-xl mt-1 hidden max-h-60 overflow-y-auto";
-            input.parentNode.appendChild(list);
-
-            let timeoutId;
-            let currentController = null;
-
-            input.addEventListener("input", function() {
-                const query = this.value;
-                
-                input.dataset.valid = "false"; 
-                list.innerHTML = "";
-                list.classList.add("hidden");
-
-                if (currentController) currentController.abort();
-                clearTimeout(timeoutId);
-
-                if (query.length < 2) return;
-
-                timeoutId = setTimeout(async () => {
-                    currentController = new AbortController();
-                    
-                    try {
-                        // Changement d'API : Open-Meteo au lieu de Photon
-                        let url = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=5&language=fr&format=json`;
-                        
-                        const response = await fetch(url, { signal: currentController.signal });
-                        const data = await response.json();
-
-                        // Open-Meteo renvoie "results", pas "features"
-                        if (data.results && data.results.length > 0) {
-                            let hasValidResults = false;
-
-                            data.results.forEach(place => {
-                                // Filtrage (Open-Meteo n'a pas 'osm_value', on regarde les champs dispo)
-                                // Si c'est un pays, 'feature_code' est souvent 'PCLI' ou on vérifie s'il n'y a pas de ville
-                                const isCountry = !place.admin1 && !place.admin2; // Approximation simple
-
-                                if (!allowCountries && isCountry) return;
-
-                                hasValidResults = true;
-                                const li = document.createElement("li");
-                                li.className = "px-4 py-2 hover:bg-indigo-50 cursor-pointer border-b border-slate-50 transition-colors flex items-center text-left";
-                                
-                                let icon = isCountry 
-                                    ? '<i class="fa-solid fa-globe text-indigo-300 mr-3 text-xs"></i>'
-                                    : '<i class="fa-solid fa-city text-slate-300 mr-3 text-xs"></i>';
-                                
-                                // Construction du texte
-                                let displayText = place.name;
-                                let secondaryText = "";
-                                
-                                if (place.admin1) secondaryText += place.admin1;
-                                if (place.country) secondaryText += (secondaryText ? ", " : "") + place.country;
-
-                                li.innerHTML = `
-                                    ${icon}
-                                    <div class="truncate">
-                                        <div class="font-medium text-sm text-slate-700">${displayText}</div>
-                                        <div class="text-xs text-slate-400 truncate">${secondaryText}</div>
-                                    </div>
-                                `;
-
-                                li.addEventListener("click", () => {
-                                    // Formatage de la valeur finale dans l'input
-                                    if (isCountry) {
-                                        input.value = place.name;
-                                    } else {
-                                        input.value = `${place.name}, ${place.country || ''}`; 
-                                    }
-                                    input.dataset.valid = "true";
-                                    list.classList.add("hidden");
-                                    list.innerHTML = "";
-                                });
-
-                                list.appendChild(li);
-                            });
-
-                            if (hasValidResults) list.classList.remove("hidden");
-                        }
-                    } catch (err) {
-                        // On ignore les erreurs d'annulation
-                        if (err.name !== 'AbortError') console.error(err);
-                    }
-                }, 150);
-            });
-
-            // Fermeture au clic extérieur
-            document.addEventListener("click", function(e) {
-                if (e.target !== input && e.target !== list) {
-                    list.classList.add("hidden");
-                }
-            });
-        }
-    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pocketbase/0.21.1/pocketbase.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="app.js"></script>
 </body>
 </html>

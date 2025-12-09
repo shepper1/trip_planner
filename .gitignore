@@ -10,3 +10,7 @@ ENV/
 # On ignore les fichiers compilés par Python
 __pycache__/
 *.py[cod]
+backup/
+node_modules/
+src/
+test*/
