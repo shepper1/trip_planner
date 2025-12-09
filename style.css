@@ -100,3 +100,37 @@ body {
     margin-top: 4px; 
     font-size: 0.875rem;
 }
+
+/* --- CARROUSEL / GRILLE --- */
+.cards-container {
+    display: flex;           /* Mobile : Alignement horizontal */
+    overflow-x: auto;        /* Mobile : Scrollable */
+    gap: 1.5rem;             /* Espace entre les cartes */
+    padding-bottom: 1.5rem;
+    scroll-snap-type: x mandatory; /* Effet magnétique */
+    
+    /* Cache la barre de défilement */
+    scrollbar-width: none; 
+    -ms-overflow-style: none;
+}
+.cards-container::-webkit-scrollbar { 
+    display: none; 
+}
+
+.card-item {
+    min-width: 85%;          /* Mobile : La carte prend 85% de l'écran */
+    scroll-snap-align: center;
+}
+
+/* Version PC (dès 768px) */
+@media (min-width: 768px) {
+    .cards-container {
+        display: grid !important;           /* Force la Grille */
+        grid-template-columns: repeat(3, 1fr); /* 3 Colonnes identiques */
+        overflow-x: visible;
+        padding-bottom: 0;
+    }
+    .card-item {
+        min-width: 0;        /* Annule la largeur mobile */
+    }
+}
