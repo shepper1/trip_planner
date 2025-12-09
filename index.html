@@ -15,23 +15,22 @@
     <link href="style.css" rel="stylesheet">
 </head>
 <body class="bg-brand-bg font-sans text-brand-dark overflow-x-hidden antialiased selection:bg-brand-accent selection:text-white">
-
     <nav class="absolute w-full top-0 z-50 bg-transparent py-4">
         <div class="w-full max-w-7xl mx-auto px-4 md:px-6"> 
             <div class="flex justify-between items-center">
                 
                 <div class="flex items-center cursor-pointer shrink-0 group" onclick="router('home')">
-                    <div class="bg-brand-primary text-white p-2 rounded-xl mr-3 shadow-md group-hover:scale-110 transition duration-300">
-                        <i class="fa-solid fa-plane-departure text-xl"></i>
+                    <div class="bg-brand-primary text-white p-1.5 md:p-2 rounded-xl mr-2 md:mr-3 shadow-md group-hover:scale-110 transition duration-300">
+                        <i class="fa-solid fa-plane-departure text-lg md:text-xl"></i>
                     </div>
-                    <span class="font-bold text-2xl tracking-tight text-brand-dark font-serif">MyTrip<span class="text-brand-accent">Planner</span></span>
+                    <span class="font-bold text-lg md:text-2xl tracking-tight text-brand-dark font-serif">MyTrip<span class="text-brand-accent">Planner</span></span>
                 </div>
                 
-                <div id="nav-public" class="flex items-center gap-4">
-                    <button onclick="router('auth')" class="text-slate-600 hover:text-brand-primary font-bold text-base px-4 py-2 transition rounded-xl hover:bg-white/80">
+                <div id="nav-public" class="flex items-center gap-2 md:gap-4">
+                    <button onclick="router('auth')" class="text-slate-600 hover:text-brand-primary font-bold text-xs md:text-base px-2 md:px-4 py-2 transition rounded-xl hover:bg-white/80">
                         Connexion
                     </button>
-                    <button onclick="router('auth', 'signup')" class="bg-brand-dark hover:bg-brand-primary text-white text-base font-bold px-6 py-3 rounded-full transition shadow-lg hover:shadow-brand-primary/30 transform hover:-translate-y-0.5 whitespace-nowrap">
+                    <button onclick="router('auth', 'signup')" class="bg-brand-dark hover:bg-brand-primary text-white text-xs md:text-base font-bold px-3 md:px-6 py-2 md:py-3 rounded-full transition shadow-lg hover:shadow-brand-primary/30 transform hover:-translate-y-0.5 whitespace-nowrap">
                         S'inscrire
                     </button>
                 </div>
@@ -49,7 +48,6 @@
             </div>
         </div>
     </nav>
-
     <div id="view-home" class="app-view">
         
         <header class="hero-bg min-h-screen flex items-center pt-20 pb-10 relative">
