@@ -1,5 +1,5 @@
 /* =========================================
-   STYLE.CSS - Copie conforme de temp2.html
+   STYLE.CSS - Version "Peps" & Bold
    ========================================= */
 
 /* 1. SCROLLBAR & BODY */
@@ -11,52 +11,59 @@ body {
     width: 100%; 
 }
 
-/* 2. FORÇAGE DES POLICES (Override) */
-/* On force l'application des polices chargées depuis Google Fonts */
+/* 2. FORÇAGE DES POLICES ET GRAISSE (Override) */
+
+/* Corps de texte : On force 'SemiBold' (600) pour épaissir la lecture */
 .font-sans { 
-    font-family: 'Plus Jakarta Sans', sans-serif !important; 
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    font-weight: 600 !important; /* Rend le texte courant plus épais */
 }
+
+/* Titres : On force 'ExtraBold' (800) pour des titres très impactants */
 .font-serif { 
     font-family: 'Outfit', sans-serif !important; 
+    font-weight: 800 !important;
 }
 
-/* 3. COULEURS PERSONNALISÉES */
-/* Ces couleurs n'existent pas dans le tailwind.css par défaut, on les définit ici */
+/* 3. COULEURS PERSONNALISÉES "PEPS" */
 
-/* Vert Lagon (#0D9488) */
+/* Vert Lagon VIBRANT (#0D9488) */
 .text-brand-primary { color: #0D9488 !important; }
 .bg-brand-primary { background-color: #0D9488 !important; }
 .border-brand-primary { border-color: #0D9488 !important; }
 .focus\:ring-brand-primary:focus { --tw-ring-color: #0D9488 !important; }
 .hover\:text-brand-primary:hover { color: #0D9488 !important; }
-.hover\:border-brand-primary\/30:hover { border-color: rgba(13, 148, 136, 0.3) !important; }
+/* Hover un peu plus foncé pour le contraste */
+.hover\:bg-brand-primary:hover { background-color: #0F766E !important; } 
+.hover\:border-brand-primary\/30:hover { border-color: rgba(13, 148, 136, 0.4) !important; }
 
-/* Orange Sunset (#F97316) */
+/* Orange Sunset VIBRANT (#F97316) */
 .text-brand-accent { color: #F97316 !important; }
 .bg-brand-accent { background-color: #F97316 !important; }
 .hover\:text-brand-accent:hover { color: #F97316 !important; }
+.hover\:bg-brand-accent:hover { background-color: #EA580C !important; } /* Orange plus sombre au survol */
 
-/* Bleu Nuit (#0F172A) */
+/* Bleu Nuit (#0F172A) - Inchangé, très bon contraste */
 .text-brand-dark { color: #0F172A !important; }
 .bg-brand-dark { background-color: #0F172A !important; }
 
-/* Pêche Pâle (#FFEDD5) */
+/* Pêche Pâle (#FFEDD5) - Fond doux pour l'orange */
 .bg-brand-light { background-color: #FFEDD5 !important; }
 .border-brand-light { border-color: #FFEDD5 !important; }
 .hover\:bg-brand-light\/30:hover { background-color: rgba(255, 237, 213, 0.3) !important; }
 .hover\:bg-brand-light\/50:hover { background-color: rgba(255, 237, 213, 0.5) !important; }
 
-/* Blanc Pur & Dégradés */
+/* Blanc Pur */
 .bg-brand-bg { background-color: #FFFFFF !important; }
 
-/* Dégradés complexes (Tailwind ne peut pas deviner vos variables) */
+/* DÉGRADÉS AJUSTÉS AVEC LES NOUVELLES COULEURS */
 .from-brand-primary { 
     --tw-gradient-from: #0D9488 !important; 
     --tw-gradient-to: rgba(13, 148, 136, 0); 
     --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important; 
 }
 .via-brand-secondary { 
-    --tw-gradient-via: #14B8A6 !important; 
+    --tw-gradient-via: #14B8A6 !important; /* Une touche plus claire au milieu */
     --tw-gradient-stops: var(--tw-gradient-from), #14B8A6, var(--tw-gradient-to) !important; 
 }
 .to-brand-accent { 
@@ -65,12 +72,12 @@ body {
 
 /* 4. UTILITAIRES & ANIMATIONS */
 
-/* IMPORTANT : Correctif pour cacher les sections (remplace hidden-section) */
+/* Masquage forcé */
 .hidden { 
     display: none !important; 
 }
 
-/* Animation d'apparition */
+/* Animation */
 .fade-in { 
     animation: fadeIn 0.5s ease-out forwards; 
     opacity: 0; 
@@ -80,14 +87,15 @@ body {
     to { opacity: 1; transform: translateY(0); } 
 }
 
-/* Image de fond (Hero) */
+/* Background Hero */
+/* Hero BG : On allège le filtre blanc (0.4 à 0.7) pour laisser éclater les couleurs de la photo */
 .hero-bg {
-    background-image: linear-gradient(rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.95)), url('https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?q=80&w=1920&auto=format&fit=crop');
+    background-image: linear-gradient(rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.75)), url('https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?q=80&w=1920&auto=format&fit=crop');
     background-size: cover;
     background-position: center;
 }
 
-/* Liste de suggestions (Autocomplétion) */
+/* Autocomplete */
 .suggestions-list {
     background: white; 
     position: absolute; 
@@ -99,17 +107,17 @@ body {
     padding: 0.25rem 0; 
     margin-top: 4px; 
     font-size: 0.875rem;
+    font-weight: 600; /* Suggestions en gras aussi */
 }
 
 /* --- CARROUSEL / GRILLE --- */
 .cards-container {
-    display: flex;           /* Mobile : Alignement horizontal */
-    overflow-x: auto;        /* Mobile : Scrollable */
-    gap: 1.5rem;             /* Espace entre les cartes */
+    display: flex;
+    overflow-x: auto;
+    gap: 1.5rem;
     padding-bottom: 1.5rem;
-    scroll-snap-type: x mandatory; /* Effet magnétique */
-    
-    /* Cache la barre de défilement */
+    scroll-snap-type: x mandatory;
+    width: 100%;
     scrollbar-width: none; 
     -ms-overflow-style: none;
 }
@@ -118,19 +126,27 @@ body {
 }
 
 .card-item {
-    min-width: 85%;          /* Mobile : La carte prend 85% de l'écran */
+    min-width: 85%;
     scroll-snap-align: center;
 }
 
 /* Version PC (dès 768px) */
 @media (min-width: 768px) {
     .cards-container {
-        display: grid !important;           /* Force la Grille */
-        grid-template-columns: repeat(3, 1fr); /* 3 Colonnes identiques */
+        display: grid !important;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2rem;
         overflow-x: visible;
         padding-bottom: 0;
     }
     .card-item {
-        min-width: 0;        /* Annule la largeur mobile */
+        min-width: auto !important;
+        width: 100%;
     }
+}
+/* Carte flottante intense */
+.card-float {
+    box-shadow: 0 20px 40px -5px rgba(15, 23, 42, 0.15), 0 10px 20px -5px rgba(15, 23, 42, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(8px); /* Petit effet de flou moderne */
 }

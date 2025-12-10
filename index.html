@@ -63,29 +63,30 @@
                                 organisées en 1 clic.
                         </span>
                     </h1>
-                    <p class="text-lg text-slate-600 mb-8 max-w-md leading-relaxed font-medium">
-                        Laissez notre IA analyser des milliers d'options pour créer l'itinéraire parfait, jour par jour, en 15 minutes chrono.
-                    </p>
-                    
-                    <div class="flex flex-col space-y-3 text-slate-700 font-semibold text-base">
-                        <div class="flex items-center">
-                            <i class="fa-solid fa-check-circle text-brand-primary mr-3"></i> 
-                            100% Personnalisé & Gratuit
-                        </div>
-                        <div class="flex items-center">
-                            <i class="fa-solid fa-leaf text-emerald-600 mr-3"></i> 
-                            Calcul empreinte Carbone inclus
-                        </div>
-                        <div class="flex items-center">
-                            <i class="fa-solid fa-gift text-brand-accent mr-3"></i>
-                            Premier itinéraire offert
-                        </div>
-                    </div>
+    
+    <p class="text-lg text-brand-dark mb-6 leading-relaxed font-medium">
+        Laissez notre IA analyser des milliers d'options pour créer l'itinéraire parfait, jour par jour, en 15 minutes chrono.
+    </p>
+    
+    <div class="flex flex-col space-y-3 text-brand-dark font-bold text-sm">
+        <div class="flex items-center">
+            <i class="fa-solid fa-check-circle text-brand-primary mr-3 text-lg"></i> 
+            100% Personnalisé & Gratuit
+        </div>
+        <div class="flex items-center">
+            <i class="fa-solid fa-leaf text-emerald-600 mr-3 text-lg"></i> 
+            Calcul empreinte Carbone inclus
+        </div>
+        <div class="flex items-center">
+            <i class="fa-solid fa-gift text-brand-accent mr-3 text-lg"></i>
+            Premier itinéraire offert
+        </div>
+    </div>
+
                 </div>
 
-                <div class="lg:w-5/12 w-full fade-in z-10" style="animation-delay: 0.3s;">
+                <div class="bg-white p-4 md:p-6 rounded-3xl shadow-2xl border border-slate-100 border-t-4 border-brand-accent relative">
                     <div class="bg-white p-6 rounded-3xl shadow-2xl border border-slate-100 relative">
-                        
                         <div class="flex justify-between items-end mb-6">
                             <h2 class="text-2xl font-bold text-brand-dark font-serif">Où partez-vous ?</h2>
                             <div class="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-1 rounded-full border border-emerald-100 uppercase tracking-wide">
@@ -94,7 +95,6 @@
                         </div>
                         
                         <form id="freeForm" onsubmit="handleFreeForm(event)" class="space-y-3">
-                            
                             <input type="hidden" name="origin_lat" id="free_origin_lat">
                             <input type="hidden" name="origin_lng" id="free_origin_lng">
                             <input type="hidden" name="dest_lat" id="free_dest_lat">
