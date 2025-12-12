@@ -408,22 +408,58 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // --- LOGIQUE BASCULE DATES / DURÉE ---
 function toggleDateMode(prefix, mode) {
+    console.log("Mode changé :", mode); // Pour vérifier dans la console (F12)
+
+    // 1. Récupération des blocs (les conteneurs)
     const blocDuree = document.getElementById(prefix + '_bloc_duree');
     const blocDates = document.getElementById(prefix + '_bloc_dates');
     
+    // 2. Récupération des champs (les inputs)
     const inputDuree = document.getElementById(prefix + '_input_duree');
-    const inputStart = document.getElementById(prefix + '_input_date_debut');
-    const inputEnd = document.getElementById(prefix + '_input_date_fin');
+    const inputDebut = document.getElementById(prefix + '_input_date_debut');
+    const inputFin = document.getElementById(prefix + '_input_date_fin');
+
+    // Sécurité : Si les éléments n'existent pas dans le HTML, on arrête pour éviter le bug
+    if (!blocDuree || !blocDates) {
+        console.error("Erreur : Les blocs HTML sont introuvables. Vérifiez les ID dans index.html");
+        return;
+    }
 
     if (mode === 'duree') {
+        // --- CAS 1 : MODE DURÉE (Dates Flexibles) ---
+        
+        // On AFFICHE la durée et on CACHE les dates
         blocDuree.classList.remove('hidden');
         blocDates.classList.add('hidden');
-        if(inputStart) inputStart.value = "";
-        if(inputEnd) inputEnd.value = "";
+        
+        // Gestion des obligations (Required)
+        if(inputDuree) inputDuree.removeAttribute('required'); // Durée optionnelle
+        if(inputDebut) inputDebut.removeAttribute('required');
+        if(inputFin) inputFin.removeAttribute('required');
+        
+        // Nettoyage
+        if(inputDebut) inputDebut.value = '';
+        if(inputFin) inputFin.value = '';
+
     } else {
-        blocDates.classList.remove('hidden');
+        // --- CAS 2 : MODE DATES FIXES ---
+        
+        // On CACHE la durée et on AFFICHE les dates
         blocDuree.classList.add('hidden');
-        if(inputDuree) inputDuree.value = "";
+        
+        // Important : On retire hidden ET on s'assure que flex est là pour l'alignement
+        blocDates.classList.remove('hidden');
+        blocDates.classList.add('flex'); 
+        
+        // Gestion des obligations (Required)
+        if(inputDuree) inputDuree.removeAttribute('required');
+        
+        // Les dates deviennent OBLIGATOIRES
+        if(inputDebut) inputDebut.setAttribute('required', '');
+        if(inputFin) inputFin.setAttribute('required', '');
+        
+        // Nettoyage
+        if(inputDuree) inputDuree.value = '';
     }
 }
 
