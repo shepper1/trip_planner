@@ -397,6 +397,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if(pb.authStore.isValid) router('dashboard');
     else router('home');
 
+    // Charger les inspirations aléatoires
+    loadFeaturedTrips();
+
     // 1. Formulaire Gratuit (Accueil)
     setupAutocomplete('free_origin', false);      
     setupAutocomplete('free_destination', true);
@@ -588,4 +591,61 @@ function setupAutocomplete(inputId, allowCountries = true) {
             list.classList.add("hidden");
         }
     });
+}
+
+// --- CHARGEMENT DES VOYAGES ALÉATOIRES ---
+async function loadFeaturedTrips() {
+    const container = document.getElementById('featured-trips-container');
+    if (!container) return;
+
+    try {
+        const records = await pb.collection('trips').getList(1, 3, {
+            sort: '@random',
+            filter: 'is_public = true'
+        });
+
+        if (records.items.length === 0) {
+            container.innerHTML = "<p class='col-span-3 text-center text-slate-400'>Aucun voyage public trouvé.</p>";
+            return;
+        }
+
+        const cardsHtml = records.items.map(trip => {
+            const c = trip.content || {};
+            
+            // --- LOGIQUE DE CONCATÉNATION ---
+            
+            // 1. URL de l'image (GitHub)
+            // On utilise le slug du voyage pour cibler le bon dépôt
+            const imageUrl = `https://raw.githubusercontent.com/mytripplanner-dotfr/${trip.slug}/main/header.png`;
+
+            // 2. URL du lien cliquable
+            // Remplacez 'https://mytripplanner.fr/v/' par le préfixe de votre choix
+            const linkUrl = `https://mytripplanner-dotfr.github.io/${trip.slug}`;
+
+            return `
+                <a href="${linkUrl}" target="_blank" class="card-item group rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl hover:shadow-brand-primary/10 transition-all duration-300 cursor-pointer border border-slate-100 bg-white block no-underline">
+                    <div class="h-48 bg-cover bg-center group-hover:scale-105 transition duration-700" 
+                         style="background-image: url('${imageUrl}');">
+                    </div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-2">
+                            <h4 class="font-bold text-lg text-brand-dark group-hover:text-brand-primary transition leading-tight">
+                                ${c.titre || trip.destination}
+                            </h4>
+                            <span class="text-xl">${c.symbole || "📍"}</span>
+                        </div>
+                        <p class="text-slate-500 font-medium text-xs">
+                            <i class="fa-regular fa-calendar mr-2"></i>${c.duree || "Séjour"} • <strong>${c.budget_total || "Voir prix"}</strong>
+                        </p>
+                    </div>
+                </a>
+            `;
+        }).join('');
+
+        container.innerHTML = cardsHtml;
+
+    } catch (error) {
+        console.error("Erreur PocketBase :", error);
+        container.innerHTML = "<p class='col-span-3 text-center text-red-400'>Impossible de charger les inspirations.</p>";
+    }
 }
