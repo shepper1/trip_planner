@@ -2,7 +2,8 @@
 const PB_URL = "https://api.mytripplanner.fr/";
 
 // VOS URLS DE WEBHOOK
-const WEBHOOK_FREE = "https://n8n.mytripplanner.fr/webhook/695e2724-613b-4430-bdc5-9b07dbe38fca"; 
+// const WEBHOOK_FREE = "https://n8n.mytripplanner.fr/webhook/695e2724-613b-4430-bdc5-9b07dbe38fca"; 
+const WEBHOOK_FREE = "https://n8n.mytripplanner.fr/webhook/333784a4-c1ea-401d-9504-e29ebe5584ae";
 const WEBHOOK_PREMIUM = "https://n8n.mytripplanner.fr/webhook/032ddc39-7ac3-4daa-98a6-5ae43dc25338";
 
 // Initialisation PocketBase
