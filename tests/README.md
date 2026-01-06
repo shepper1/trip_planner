@@ -1,91 +1,113 @@
-# 🤖 Trip Planner - Test Automatisé (Comportement Humain)
+# 🤖 Trip Planner - Tests Automatisés
 
-Ce script Python simule le parcours d'un utilisateur réel sur le site **Trip Planner**. Il utilise l'automatisation de navigateur pour générer du trafic, tester le formulaire de création de voyage et vérifier le bon fonctionnement de l'infrastructure (Frontend + Webhook n8n).
+Ce dossier contient les scripts Python pour tester l'expérience utilisateur (UX) et la robustesse du site **Trip Planner**.
 
-## 📋 Fonctionnalités
+## 📂 Scripts Disponibles
 
-Le script ne se contente pas de remplir des champs, il simule un comportement "humain" pour tester la robustesse de l'UX :
+### 1. `test_human_behavior.py` (Test Unitaire)
+Simule **un seul utilisateur** parcourant le site.
+*   **Objectif** : Vérifier que le parcours "happy path" fonctionnel.
+*   **Fonctionnalités** :
+    *   Lance automatiquement un serveur local (port 5500) si nécessaire.
+    *   Remplit le formulaire avec des données réalistes (Faker).
+    *   Simule un comportement humain (délais, hésitations).
+    *   Vérifie la popup de succès.
 
-* **Comportement aléatoire :** Scroll, hésitations de la souris, délais de frappe variables.
-* **Données dynamiques :** Utilisation de `Faker` pour générer des villes de départ et des emails différents à chaque lancement.
-* **Gestion de l'autocomplétion :** Tape les premières lettres, attend la réponse de l'API (Photon), et clique sur la suggestion.
-* **Logique géographique stricte :**
-    * *Origine* : Aléatoire mondial (via Faker).
-    * *Destination* : Liste stricte (Pays d'Europe + Japon).
-    * *Sécurité* : Vérifie que l'origine n'est pas identique à la destination.
-* **Modes temporels :** Alterne aléatoirement entre le mode "Durée" (ex: 7 jours) et le mode "Dates fixes" (dates futures cohérentes).
-* **Validation E2E :** Vérifie la présence de la popup de succès (SweetAlert2) pour valider le test.
+### 2. `qa_campaign.py` (Campagne QA de Masse)
+Lance une batterie de **15 tests (ou plus)** à la suite.
+*   **Objectif** : Tests de charge / Robustesse / Détection de flocons (flaky tests).
+*   **Fonctionnalités** :
+    *   Exécution rapide en mode "headless" (invisible).
+    *   Rapport de fin de campagne dans la console.
+    *   **Alerting Email** : Envoie un email récapitulatif en cas d'échec.
+    *   Captures d'écran automatiques des erreurs dans le dossier `error_capture/`.
+
+---
 
 ## 🛠 Pré-requis
 
-* Python 3.8 ou supérieur
-* Pip (gestionnaire de paquets Python)
+*   Python 3.8 ou supérieur
+*   Pip (gestionnaire de paquets)
 
 ## 🚀 Installation
 
-Il est recommandé d'utiliser un environnement virtuel.
+Il est recommandé d'utiliser l'environnement virtuel local.
 
-1. **Cloner le projet ou télécharger le script.**
+1.  **Créer l'environnement virtuel (si absent) :**
+    ```bash
+    python3 -m venv venv
+    ```
 
-2. **Créer et activer l'environnement virtuel :**
-   ```bash
-   # Mac / Linux
-   python3 -m venv venv
-   source venv/bin/activate
+2.  **Activer l'environnement :**
+    ```bash
+    # Mac / Linux
+    source venv/bin/activate
 
-   # Windows
-   python -m venv venv
-   venv\Scripts\activate
-   ```
-3. **Installer les dépendances :**
-```Bash
-pip install playwright faker
+    # Windows
+    venv\Scripts\activate
+    ```
+
+3.  **Installer les dépendances :**
+    ```bash
+    pip install playwright faker python-dotenv
+    ```
+
+4.  **Installer les navigateurs Playwright :**
+    ```bash
+    playwright install chromium
+    ```
+
+## ⚙️ Configuration (.env)
+
+Pour le script `qa_campaign.py`, vous devez créer un fichier `.env` dans le dossier `tests/` (ou à la racine) avec les informations suivantes :
+
+```ini
+# --- URL CIBLE ---
+TARGET_URL="http://127.0.0.1:5500/index.html"
+
+# --- EMAIL DE TEST (celui saisi dans le formulaire) ---
+TEST_EMAIL="testeur@example.com"
+
+# --- CONFIGURATION ALERTING (Pour envoi de rapport) ---
+MY_EMAIL="votre_email_gmail@gmail.com"
+MY_APP_PASSWORD="votre_mot_de_passe_application"
+ALERT_RECIPIENT="destinataire_alerte@example.com"
+SEND_MAIL_ON_FAIL=True
 ```
 
-4. **Installer les navigateurs pour Playwright :**
-```Bash
-playwright install
-```
+> **Note :** `MY_APP_PASSWORD` doit être un "Mot de passe d'application" généré depuis votre compte Google (Sécurité > Validation en deux étapes > Mots de passe des applications).
+
+---
 
 ## ▶️ Utilisation
-Pour lancer le test, exécutez simplement la commande suivante dans votre terminal :
 
-```Bash
-python test_human_behavior.py
+### Lancer un Test Unitaire (avec visionnage)
+Idéal pour le développement ou le débogage visuel.
+
+```bash
+python3 test_human_behavior.py
 ```
-Le navigateur Chromium s'ouvrira (mode headless=False) et vous verrez le bot effectuer les actions en temps réel.
+*Le navigateur s'ouvrira et vous verrez le bot agir.*
 
-## ⚙️ Configuration
-Vous pouvez modifier certaines constantes directement dans le fichier test_human_behavior.py :
+### Lancer une Campagne QA (rapide)
+Idéal avant une mise en production (utilisé par le `pre-push` hook).
 
-**Changer l'URL cible**
-Ligne 66 :
-
-```Python
-page.goto("[https://www.mytripplanner.fr/](https://www.mytripplanner.fr/)")
+```bash
+python3 qa_campaign.py
 ```
+*L'exécution est silencieuse (headless). Un rapport s'affiche à la fin.*
 
-**Modifier la liste des destinations**
-Ligne 10 (LISTE_DESTINATIONS). Vous pouvez ajouter ou retirer des pays selon vos besoins de test.
+---
 
-**Mode "Sans Tête" (Invisible)**
-Pour exécuter le test en arrière-plan (par exemple sur un serveur CI/CD), modifiez la ligne 61 :
+## 🐛 Dépannage
 
-```Python
-# Mettre headless=True pour ne pas voir le navigateur
-browser = p.chromium.launch(headless=True) 
-```
+**Erreur : `ModuleNotFoundError: No module named 'dotenv'`**
+> Vous n'avez pas installé `python-dotenv`. Exécutez `pip install python-dotenv`.
 
-## 🐛 Dépannage courant
-**Erreur**: strict mode violation: locator resolved to multiple elements Cela signifie que le script trouve plusieurs boutons ou champs identiques.
+**Erreur : `Connection refused`**
+> Le serveur local n'est pas démarré.
+> *   `test_human_behavior.py` le lance automatiquement.
+> *   Pour `qa_campaign.py`, assurez-vous que votre site est accessible à l'URL définie dans `TARGET_URL`.
 
-**Solution** : Le script utilise désormais des sélecteurs précis (ex: #freeForm button[type='submit']) pour éviter ce conflit entre le formulaire gratuit et le formulaire de connexion.
-
-L'autocomplétion ne sélectionne rien si la ville générée par Faker est trop obscure ou mal orthographiée dans la base de données de l'API.
-
-**Comportement du script** : Le script détecte l'absence de suggestion, vide le champ et tente de générer une nouvelle ville automatiquement (boucle while).
-
-**Erreur** : ModuleNotFoundError: No module named 'playwright' Vous n'avez pas activé votre environnement virtuel ou les dépendances ne sont pas installées. Relisez la section Installation.
-
-## 📞 Support
-Ce script est conçu pour tester le formulaire "Gratuit" (#freeForm). Si vous souhaitez tester le formulaire Premium (modal), il faudra adapter les sélecteurs CSS (ex: #premiumForm).
+**Erreur d'envoi d'email**
+> Vérifiez que `MY_APP_PASSWORD` est correct et ne contient pas d'espaces. Assurez-vous que le compte Gmail autorise l'envoi SMTP.

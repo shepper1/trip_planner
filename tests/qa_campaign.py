@@ -2,13 +2,12 @@ import random
 import time
 import os
 import smtplib
+import sys
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from datetime import datetime, timedelta
 from playwright.sync_api import sync_playwright
 from faker import Faker
-
-import sys
 from dotenv import load_dotenv
 
 # --- CHARGEMENT DES VARIABLES D'ENVIRONNEMENT ---
@@ -199,12 +198,15 @@ def run_campaign():
                 else:
                     fallback_origin = random.choice(SAFE_ORIGINS)
                     print(f"   ⚠️ Fallback Origine: {fallback_origin}")
-                    force_select_location(page, "#free_origin", fallback_origin)
-                    current_origin = f"{fallback_origin} (Fallback)"
+                    if force_select_location(page, "#free_origin", fallback_origin):
+                        current_origin = f"{fallback_origin} (Fallback)"
+                    else:
+                         raise Exception(f"Impossible de sélectionner l'origine de secours : {fallback_origin}")
                 
                 # --- DESTINATION ---
                 if is_surprise:
-                    page.locator("text=Mode \"Surprends-moi\"").click()
+                    # On clique directement sur la checkbox de manière forcée (car masquée par le style)
+                    page.click("#free_surprise", force=True)
                 else:
                     generator = fake.country if random.choice([True, False]) else fake.city
                     found_dest = find_valid_location(page, "#free_destination", generator)
@@ -214,8 +216,10 @@ def run_campaign():
                         fallback_dest = random.choice(SAFE_DESTINATIONS)
                         while fallback_dest in current_origin: fallback_dest = random.choice(SAFE_DESTINATIONS)
                         print(f"   ⚠️ Fallback Destination: {fallback_dest}")
-                        force_select_location(page, "#free_destination", fallback_dest)
-                        current_dest = f"{fallback_dest} (Fallback)"
+                        if force_select_location(page, "#free_destination", fallback_dest):
+                            current_dest = f"{fallback_dest} (Fallback)"
+                        else:
+                            raise Exception(f"Impossible de sélectionner la destination de secours : {fallback_dest}")
 
                 # --- DATES ---
                 if mode_date == "duree":
