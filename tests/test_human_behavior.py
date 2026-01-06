@@ -27,10 +27,14 @@ def is_port_in_use(port):
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         return s.connect_ex(('127.0.0.1', port)) == 0
 
+class ReuseAddressTCPServer(socketserver.TCPServer):
+    allow_reuse_address = True
+
 def start_server(port):
     # Démarrage d'un serveur HTTP simple servant le dossier courant
     handler = http.server.SimpleHTTPRequestHandler
-    with socketserver.TCPServer(("", port), handler) as httpd:
+    # Utilisation de la classe personnalisée pour éviter les erreurs "Address already in use"
+    with ReuseAddressTCPServer(("", port), handler) as httpd:
         print(f"   🚀 Serveur démarré sur le port {port}")
         httpd.serve_forever()
 
@@ -65,7 +69,7 @@ def run():
         # Lancement du serveur dans un thread séparé
         server_thread = threading.Thread(target=start_server, args=(port,), daemon=True)
         server_thread.start()
-        time.sleep(1) # Attente démarrage
+        time.sleep(3) # Attente démarrage (augmenté pour stabilité)
     else:
         print(f"   ℹ️  Port {port} déjà occupé. Utilisation du serveur existant.")
 
