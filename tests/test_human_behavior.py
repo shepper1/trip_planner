@@ -4,9 +4,14 @@ import socket
 import threading
 import http.server
 import socketserver
+import os
 from playwright.sync_api import sync_playwright
 from datetime import timedelta
 from faker import Faker
+from dotenv import load_dotenv
+
+# Chargement du .env pour récupérer l'email de test si défini
+load_dotenv(os.path.join(os.path.dirname(__file__), '.env'))
 
 # 1. On garde Faker pour générer des villes de départ et des emails aléatoires
 fake = Faker(['fr_FR', 'en_US', 'es_ES', 'it_IT', 'de_DE'])
@@ -113,7 +118,9 @@ def run():
             page.fill("#free_input_date_debut", start_date.strftime("%Y-%m-%d"))
             page.fill("#free_input_date_fin", end_date.strftime("%Y-%m-%d"))
 
-        fake_email = fake.email()
+        # Utilisation de l'email fixe si défini dans le .env
+        fake_email = os.getenv("TEST_EMAIL")
+            
         print(f"   📧 Email : {fake_email}")
         page.fill("input[name='email']", fake_email)
         
